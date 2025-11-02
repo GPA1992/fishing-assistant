@@ -1,18 +1,19 @@
-import { MoonPhaseDataResponse } from "../../../application/contracts/moon-pahase-day-response";
-import { MoonPhaseParams } from "../../../application/contracts/moon-phases-input-params";
+import axios from "axios";
+import { MoonPhaseParams, MoonPhaseDataResponse } from "../../../application";
 import { makeVisualCrossingAstronomyData } from "../../../domain/visual-crossing-astronomy-data";
 import { VisualCrossingAstronomyResponse } from "./contracts/visual-crossing-response";
 
-
 type Deps = {
   apiKey: string;
-  http: { get: (url: string) => Promise<{ data: VisualCrossingAstronomyResponse }> };
+  http: typeof axios;
 };
 
 export function getAstronomicalDataFunc({ apiKey, http }: Deps) {
-  return async function getAstronomicalData(
-    { datetime, latitude, longitude }: MoonPhaseParams
-  ): Promise<MoonPhaseDataResponse> {
+  return async function getAstronomicalData({
+    datetime,
+    latitude,
+    longitude,
+  }: MoonPhaseParams): Promise<MoonPhaseDataResponse> {
     const startDate = new Date(datetime);
     startDate.setDate(startDate.getDate() - 5);
 
@@ -29,7 +30,7 @@ export function getAstronomicalDataFunc({ apiKey, http }: Deps) {
       `?unitGroup=metric&key=${apiKey}&include=days&elements=` +
       `datetime,moonphase,sunrise,sunset,moonrise,moonset`;
 
-    const res = await http.get(url);
+    const res = await http.get<VisualCrossingAstronomyResponse>(url);
     const { days } = res.data;
 
     const daily = days.map((day) =>
@@ -46,7 +47,8 @@ export function getAstronomicalDataFunc({ apiKey, http }: Deps) {
     const targetDateStr = datetime.toISOString().split("T")[0];
     const targetDay = daily.find((d) => d.date === targetDateStr);
 
-    if (!targetDay) throw new Error(`Dados não encontrados para a data ${targetDateStr}`);
+    if (!targetDay)
+      throw new Error(`Dados não encontrados para a data ${targetDateStr}`);
 
     return { daily, targetDay };
   };
