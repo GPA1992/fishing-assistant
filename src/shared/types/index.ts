@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 export type PaginationMeta = {
@@ -38,15 +37,8 @@ export const HttpStatus = {
   GATEWAY_TIMEOUT: 504,
 } as const;
 
-
-
-
-
 export type HttpStatusCode = (typeof HttpStatus)[keyof typeof HttpStatus];
 
-
-
 export type RepoDeps = {
-  apiKey?: string;
   http?: typeof axios;
 };

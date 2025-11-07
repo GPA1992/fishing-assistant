@@ -6,6 +6,9 @@ import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import fastifyAutoload from "@fastify/autoload";
 import ajvFormats from "ajv-formats";
+import dotenv from "dotenv";
+import redisPlugin from "./plugins/redis";
+dotenv.config();
 
 async function buildApp() {
   const app = Fastify({
@@ -22,6 +25,7 @@ async function buildApp() {
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
+  app.register(redisPlugin);
   await app.register(cors, {
     origin: (origin, cb) => cb(null, true),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -50,6 +54,11 @@ async function buildApp() {
 
   void app.register(fastifyAutoload, {
     dir: join(__dirname, "routes"),
+  });
+
+  app.get("/ping", async (req, rep) => {
+    const pong = await (app.redis as any).ping();
+    return { pong };
   });
 
   return app;
