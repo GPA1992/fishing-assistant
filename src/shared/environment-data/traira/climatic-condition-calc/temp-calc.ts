@@ -1,5 +1,4 @@
-import { clamp, smoothLerp } from "../algorithms";
-
+import { clamp, smoothLerp } from "../../algorithms";
 /**
  * Nota de temperatura para traíra (0-100)
  *

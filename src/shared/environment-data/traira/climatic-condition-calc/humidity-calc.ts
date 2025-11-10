@@ -1,4 +1,4 @@
-import { smoothLerp } from "../algorithms";
+import { smoothLerp } from "../../algorithms";
 
 export const humidityScore = (h: number) => {
   if (h >= 90) return 20; // umidade muito alta: ruim
@@ -11,5 +11,5 @@ export const humidityScore = (h: number) => {
   if (h >= 25) return smoothLerp(h, 25, 35, 75, 90); // 25–35%: muito seco, leve penalização
   return 60; // <25%: seco demais, penaliza mais
 };
-const result = humidityScore(38);
+const result = humidityScore(77);
 console.log(result);
