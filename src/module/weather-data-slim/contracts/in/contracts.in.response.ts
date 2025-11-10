@@ -3,6 +3,13 @@ export interface HourlyResponseData<T> {
   targetHour: T;
 }
 
+export interface HourlyResponseDataWhitScore<T> {
+  hourly: T[];
+
+  score: number;
+  targetHour: T;
+}
+
 export interface DailyResponseData<T> {
   daily: T[];
   targetDay: T;

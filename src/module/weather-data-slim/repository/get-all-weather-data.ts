@@ -1,5 +1,5 @@
 import { fetchWeatherApi } from "openmeteo";
-import { WeatherData } from "../domain/weather-data.entity";
+import { makeWeatherData, WeatherData } from "../domain/weather-data.entity";
 import { WeatherQueryParams } from "../contracts/in/contracts.in.params";
 import { HourlyResponseData } from "../contracts/in/contracts.in.response";
 
@@ -21,9 +21,14 @@ export function getAllWeatherDataFunc() {
       hourly: [
         "temperature_2m",
         "relative_humidity_2m",
-        "surface_pressure",
+        "pressure_msl",
         "wind_speed_10m",
+        "precipitation_probability",
+        "precipitation",
+        "rain",
+        "showers",
       ],
+      wind_speed_unit: "kmh",
     };
 
     const responses = await fetchWeatherApi(apiUrl, requestParams);
@@ -48,16 +53,26 @@ export function getAllWeatherDataFunc() {
     const humidity = hourly.variables(1)?.valuesArray() ?? [];
     const pressure = hourly.variables(2)?.valuesArray() ?? [];
     const windSpeed = hourly.variables(3)?.valuesArray() ?? [];
+    const probability = hourly.variables(4)?.valuesArray() ?? [];
+    const total = hourly.variables(5)?.valuesArray() ?? [];
+    const rain = hourly.variables(6)?.valuesArray() ?? [];
+    const showers = hourly.variables(7)?.valuesArray() ?? [];
 
     const round2 = (x: number) => Math.round((x + Number.EPSILON) * 100) / 100;
 
-    const hourlyData: WeatherData[] = times.map((time, i) => ({
-      time,
-      temperature: round2(temperature[i]),
-      humidity: round2(humidity[i]),
-      pressure: round2(pressure[i]),
-      windSpeed: round2(windSpeed[i]),
-    }));
+    const hourlyData = times.map((time, i) =>
+      makeWeatherData({
+        time,
+        temperature: round2(temperature[i]),
+        humidity: round2(humidity[i]),
+        pressure: round2(pressure[i]),
+        windSpeed: round2(windSpeed[i]),
+        probability: round2(probability[i]),
+        total: round2(total[i]),
+        rain: round2(rain[i]),
+        showers: round2(showers[i]),
+      })
+    );
 
     // match por data+hora exata em UTC
     const targetMs = Date.UTC(

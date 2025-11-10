@@ -1,18 +1,5 @@
 import { clamp, smoothLerp } from "../algorithms";
-
-type Period = { start: string; end: string };
-
-export type SolunarInput = {
-  sunRise: string; // "07:24"
-  sunTransit: string; // "14:01"
-  sunSet: string; // "20:37"
-  moonRise: string; // "02:47"
-  moonTransit: string; // "07:34"
-  moonUnderfoot: string; // "20:01"
-  moonSet: string; // "13:07"
-  majorPeriods: Period[]; // ex: [{ start:"06:34", end:"08:33" }, ...]
-  minorPeriods: Period[]; // ex: [{ start:"02:17", end:"03:17" }, ...]
-};
+import { Period, SolunarInput } from "../types";
 
 const MIN_IN_HOUR = 60;
 
@@ -136,7 +123,7 @@ export const buildSolunarDailyScore = (input: SolunarInput): number => {
 /**
  * Saída consolidada.
  */
-export const buildSolunarScores = (input: SolunarInput) => {
+export const solunarScores = (input: SolunarInput) => {
   const solunarHourlyScore = buildSolunarHourlyScore(input);
   const solunarDailyScore = buildSolunarDailyScore(input);
 

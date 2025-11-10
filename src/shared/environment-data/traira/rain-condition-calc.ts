@@ -1,16 +1,7 @@
 import { clamp, smoothLerp } from "../algorithms";
+import { RainContext } from "../types";
 
-type TrairaRainContext = {
-  volumeMmPerHour: number; // volume total de precipitação (mm/h)
-  rainProbability: number; // probabilidade de chuva (0-100)
-  showerVolumeMmPerHour: number; // volume de pancadas (mm/h)
-  temperatureC: number; // temperatura (°C)
-  humidityPct: number; // umidade relativa (%)
-  pressure: number; // pressão (unidade consistente)
-  windSpeed: number; // velocidade do vento (unidade consistente)
-};
-
-export function rainScoreTraira(context: TrairaRainContext): number {
+export function rainScore(context: RainContext): number {
   const volume = Math.max(0, context.volumeMmPerHour);
   const probability = clamp(context.rainProbability, 0, 100);
   const showerVolume = Math.max(0, context.showerVolumeMmPerHour);

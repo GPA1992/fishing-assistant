@@ -1,3 +1,4 @@
+import { environmentDataByFish } from "../../../shared/environment-data";
 import { WeatherQueryParams } from "../contracts/in/contracts.in.params";
 import { HourlyResponseData } from "../contracts/in/contracts.in.response";
 import { WeatherData } from "../domain/weather-data.entity";

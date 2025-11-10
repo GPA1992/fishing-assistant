@@ -1,9 +1,20 @@
-import traira from "./traira";
-import { environmentDataType } from "./types";
+import {
+  trairaEnvironmentSpecification,
+  climaticConditionsCalc as trairaClimaticConditionsCalc,
+  moonPhaseCalc as trairaMoonPhaseCalc,
+  rainCalc as trairaRainCalc,
+  sololunarCalc as trairaSololunarCalc,
+} from "./traira";
+import { environmentDataType, fishList } from "./types";
 
-export type FishList = "traira";
-export const environmentData: Record<FishList, environmentDataType> = {
+export const environmentDataByFish: Record<fishList, environmentDataType> = {
   traira: {
-    ...traira,
+    ...trairaEnvironmentSpecification,
+    calcScoreFunctions: {
+      climaticConditionsCalc: trairaClimaticConditionsCalc,
+      moonPhaseCalc: trairaMoonPhaseCalc,
+      rainCalc: trairaRainCalc,
+      sololunarCalc: trairaSololunarCalc,
+    },
   },
 };

@@ -13,27 +13,17 @@ export const humidityScore = (h: number) => {
 };
 
 export const pressureScore = (p: number): number => {
-  // >1020 hPa: alta estável, ruim
-  if (p >= 1030) return 20;
-  if (p >= 1020) return smoothLerp(p, 1020, 1030, 40, 20);
-
-  // 1010–1020 hPa: faixa ótima
-  if (p >= 1010) return smoothLerp(p, 1010, 1020, 90, 100);
-
-  // 1005–1010 hPa: levemente baixa, bom
-  if (p >= 1005) return smoothLerp(p, 1005, 1010, 75, 90);
-
-  // 995–1005 hPa: baixa moderada, ok
-  if (p >= 995) return smoothLerp(p, 995, 1005, 60, 75);
-
-  // 980–995 hPa: baixa forte, cenário extremo sem trend -> levemente abaixo do neutro
-  if (p >= 980) return smoothLerp(p, 980, 995, 50, 60);
-
-  // <980 hPa: muito baixa, sem trend assume risco/instabilidade
-  return 45;
+  if (p >= 1030) return 60; // alta bem forte
+  if (p >= 1022) return smoothLerp(p, 1022, 1030, 85, 60); // 1022→1030: 85→60
+  if (p >= 1016) return smoothLerp(p, 1016, 1022, 100, 85); // 1016→1022: 100→85
+  if (p >= 1010) return smoothLerp(p, 1010, 1016, 90, 100); // 1010→1016: 90→100
+  if (p >= 1005) return smoothLerp(p, 1005, 1010, 75, 90); // 1005→1010: 75→90
+  if (p >= 995) return smoothLerp(p, 995, 1005, 60, 75); // 995→1005: 60→75
+  if (p >= 980) return smoothLerp(p, 980, 995, 50, 60); // 980→995: 50→60
+  return 45; // <980
 };
 
-export function tempScoreTraira(tempC: number): number {
+export const temperatureScore = (tempC: number): number => {
   let score: number;
 
   if (tempC < 8) {
@@ -67,7 +57,7 @@ export function tempScoreTraira(tempC: number): number {
   }
 
   return Math.round(clamp(score, 0, 100));
-}
+};
 
 export const windScore = (w: number): number => {
   if (w <= 0) return 60; // calmaria total, ok mas não perfeito
