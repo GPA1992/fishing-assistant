@@ -12,12 +12,12 @@ export interface environmentDataType {
   };
   moonPhase: {
     phase: string;
-    sunRise: string;
-    moonRise: string;
-    moonSet: string;
   };
   sololunar: {
     majorPeriods: string;
     minorPeriods: string;
+    sunRise: string;
+    moonRise: string;
+    moonSet: string;
   };
 }

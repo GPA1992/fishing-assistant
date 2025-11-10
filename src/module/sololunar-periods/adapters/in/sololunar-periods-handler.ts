@@ -25,15 +25,28 @@ export const getSolunarPeriodsHandler: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
-        const { latitude, longitude, date, timezone } =
-          request.query as SolunarQueryParams;
+        const {
+          latitude,
+          longitude,
+          timezone,
+          targetDay,
+          targetHour,
+          targetMonth,
+        } = request.query as SolunarQueryParams;
 
+        const date = new Date();
+        date.setUTCFullYear(date.getUTCFullYear());
+        date.setUTCMonth(parseInt(targetMonth) - 1);
+        date.setUTCDate(parseInt(targetDay));
+        date.setUTCHours(parseInt(targetHour), 0, 0, 0);
         const app = await getSoloLunarPeriods({
           latitude: Number(latitude),
           longitude: Number(longitude),
-          date,
+          date: date,
           timezone: Number(timezone),
         });
+
+        console.log(app);
 
         const response: AppResponse = {
           data: app,

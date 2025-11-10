@@ -5,7 +5,9 @@ export const astronomicalDataQuerySchema = Type.Object(
   {
     latitude: Type.Number(),
     longitude: Type.Number(),
-    datetime: Type.String({ format: "date-time" }),
+    targetDay: Type.String(),
+    targetMonth: Type.String(),
+    targetHour: Type.String(),
   },
   { additionalProperties: false }
 );

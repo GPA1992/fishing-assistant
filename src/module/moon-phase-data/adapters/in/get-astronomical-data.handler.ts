@@ -26,13 +26,17 @@ export const getAstronomicalDataHandler: FastifyPluginAsync = async (
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
-        const { datetime, latitude, longitude } =
-          request.query as astronomicalDataQueryDto;
+        const dto = request.query as astronomicalDataQueryDto;
+        const date = new Date();
+        date.setUTCFullYear(date.getUTCFullYear());
+        date.setUTCMonth(parseInt(dto.targetMonth) - 1);
+        date.setUTCDate(parseInt(dto.targetDay));
+        date.setUTCHours(parseInt(dto.targetHour), 0, 0, 0);
 
         const app = await getAstronomicalData({
-          datetime: new Date(datetime),
-          latitude: Number(latitude),
-          longitude: Number(longitude),
+          latitude: dto.latitude,
+          longitude: dto.longitude,
+          datetime: date,
         });
 
         const response: AppResponse = {

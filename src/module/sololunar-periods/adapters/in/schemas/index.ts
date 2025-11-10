@@ -6,7 +6,9 @@ export const solunarQuerySchema = Type.Object(
   {
     latitude: Type.Number(),
     longitude: Type.Number(),
-    date: Type.String({ format: "date" }),
+    targetDay: Type.String(),
+    targetMonth: Type.String(),
+    targetHour: Type.String(),
     timezone: Type.Number(),
   },
   { additionalProperties: false }

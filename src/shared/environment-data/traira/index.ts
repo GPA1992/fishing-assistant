@@ -64,23 +64,33 @@ const traira: environmentDataType = {
   },
   rain: {
     volume: `# Volume de Chuva
-- **Chuvas leves/garoa:** Não espantam a traíra. O peixe segue ativo e pode até melhorar a caça em dias quentes. Mantém a água estável e evita superaquecimento.
-- **Chuvas fortes/torrenciais:** Prejudicam muito. Deixam a água turva, agitada e com baixa visibilidade. A traíra para ou busca abrigo. Representa baixa produtividade.
-- **Pós-chuvarada:** Água barrenta. Exige iscas de cor forte, rattlin ou alta vibração.
+- **Chuvas leves (0–2 mm/h):** Mantêm a traíra ativa. Em água e ar quentes (24–32°C), podem favorecer a caça e dar boa nota.
+- **Chuvas moderadas (2–5 mm/h):** Começam a reduzir eficiência, principalmente com tempo frio ou sequência longa.
+- **Chuvas fortes (>5 mm/h):** Atrapalham muito. Turbulência, água turva e corrente deixam a traíra retraída.
+- **Chuva forte prolongada:** Caracteriza frente instalada. Atividade cai para patamar muito baixo.
+
 ## Estratégia
-- **Volume leve:** Continuar pescando. Em calor, pode até melhorar.
-- **Volume forte:** Parar. Aguardar estabilizar.
-`,
-    showers: `# Showers (Pancadas rápidas)
-- **Pancadas isoladas:** Extremamente produtivas após cessarem. Assim que a chuva para, a traíra entra em atividade intensa com ataques imediatos. Ocorre por mudança brusca na luz,  queda de temperatura e renovação de oxigênio na superfície. 
+- **Volume leve:** Pescaria mantida. Em dia quente, cenário positivo.
+- **Volume moderado:** Avaliar duração e temperatura. Curto e com clima ameno ainda rende. Longo ou frio tende a ser ruim.
+- **Volume forte ou temporal contínuo:** Evitar. Esperar estabilizar e clarear para retomar.`,
+
+    showers: `# Pancadas (Showers)
+- **Pancada isolada em dia quente e estável:** Cenário premium. Após a pancada cessar, há pico de atividade pela combinação de leve resfriamento, quebra de luz e oxigenação.
+- **Pancada em dia já chuvoso/frio:** Não gera o mesmo efeito. Com água fria ou sistema já carregado, o ganho é mínimo.
+
 ## Estratégia
-- **Showers:** Esperar a pancada passar e lançar imediatamente após. Alta chance de ataque.
-`,
+- **Pancada em dia quente limpo:** Esperar parar e arremessar imediatamente após. Alta chance de ataque.
+- **Pancada em cenário frio ou muito chuvoso:** Tratar como chuva comum. Não contar com pico de atividade.`,
+
     probability: `# Probabilidade de Chuva
-- **Alta probabilidade (chuva prevista):** 
-Indica forte chance de pico de atividade **antes** da chuva. A traíra intensifica a alimentação nas horas que antecedem o mau tempo por perceber variação de pressão, umidade e luminosidade.
-- **Tempestade real chegando:** Atividade cai quando o temporal já está formado. Em caso de raios, interromper a pescaria. 
-`,
+- **Alta probabilidade sem chuva ainda (≥40%) em dia quente:** Indica boa janela pré-chuva. A traíra tende a se alimentar mais antes da mudança.
+- **Probabilidade alta com vento forte ou volumes previstos altos:** Sinal de temporal. Reduz nota e tende a travar o peixe.
+- **Probabilidade baixa em calor extremo seco:** Não traz benefício. Pode indicar água aquecida demais e menor conforto.
+
+## Estratégia
+- **Alta probabilidade em condição quente e estável:** Valorizar horas imediatamente antes da chuva.
+- **Alta probabilidade associada a temporal:** Reduz expectativa geral. Priorizar segurança.
+- **Baixa probabilidade com clima moderado:** Manter leitura neutra, sem bônus ou penalidade relevante.`,
   },
   moonPhase: {
     phase: `
@@ -99,24 +109,6 @@ Indica forte chance de pico de atividade **antes** da chuva. A traíra intensifi
   - Focar amanhecer e entardecer.
   - Ajustar velocidade e profundidade de acordo com clima e vento do dia.
   `,
-    sunRise: `
-- Marca início da fase de maior aquecimento e reorganização alimentar. Em noites escuras (lua nova), a traíra tende a iniciar o dia mais ativa.
-  ### Estratégia
-  - Trabalhar iscas por 30–60 minutos após o nascer do sol.
-  - Se coincidir com moonSet, a janela se intensifica.
-  `,
-    moonRise: `
-- O nascer da lua tende a gerar um período gradual de aumento de atividade por mudança luminosa e comportamento solunar.
-  ### Estratégia
-  - Combinar com entardecer para janelas críticas.
-  - Usar iscas mais visuais em lua cheia.
-  `,
-    moonSet: `
-- A saída da lua reduz luminosidade e pode liberar atividade, especialmente em noites escuras.
-  ### Estratégia
-  - Se ocorrer próximo ao amanhecer, cria um pico duplo.
-  - Bom para iniciar pescarias em madrugadas claras ou em amanheceres de lua nova.
-`,
   },
   sololunar: {
     majorPeriods: `# Períodos Maiores
@@ -136,6 +128,24 @@ Indica forte chance de pico de atividade **antes** da chuva. A traíra intensifi
 ## Estratégia
 - Atacar áreas rasas e estruturas rápidas.
 - Alternar iscas caso o período maior tenha sido fraco.`,
+    sunRise: `
+- Marca início da fase de maior aquecimento e reorganização alimentar. Em noites escuras (lua nova), a traíra tende a iniciar o dia mais ativa.
+  ### Estratégia
+  - Trabalhar iscas por 30–60 minutos após o nascer do sol.
+  - Se coincidir com moonSet, a janela se intensifica.
+  `,
+    moonRise: `
+- O nascer da lua tende a gerar um período gradual de aumento de atividade por mudança luminosa e comportamento solunar.
+  ### Estratégia
+  - Combinar com entardecer para janelas críticas.
+  - Usar iscas mais visuais em lua cheia.
+  `,
+    moonSet: `
+- A saída da lua reduz luminosidade e pode liberar atividade, especialmente em noites escuras.
+  ### Estratégia
+  - Se ocorrer próximo ao amanhecer, cria um pico duplo.
+  - Bom para iniciar pescarias em madrugadas claras ou em amanheceres de lua nova.
+`,
   },
 };
 

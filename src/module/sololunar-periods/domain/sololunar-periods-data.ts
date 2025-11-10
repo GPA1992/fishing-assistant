@@ -15,6 +15,15 @@ export type SolunarPeriod = Readonly<{
   hourlyRating: Record<number, number>;
 }>;
 
+const normalizeTime = (time: string): string => {
+  const [rawH, rawM] = time.split(":").map(Number);
+  const h = rawH % 24; // mantém só a hora do dia
+  const m = rawM; // já vem correto
+  const hh = h.toString().padStart(2, "0");
+  const mm = m.toString().padStart(2, "0");
+  return `${hh}:${mm}`;
+};
+
 export function makeSolunarPeriod(data: {
   date: Date;
   sunRise: string;
@@ -33,17 +42,23 @@ export function makeSolunarPeriod(data: {
 }): SolunarPeriod {
   return Object.freeze({
     date: data.date,
-    sunRise: data.sunRise,
-    sunTransit: data.sunTransit,
-    sunSet: data.sunSet,
-    moonRise: data.moonRise,
-    moonTransit: data.moonTransit,
-    moonUnderfoot: data.moonUnderfoot,
-    moonSet: data.moonSet,
+    sunRise: normalizeTime(data.sunRise),
+    sunTransit: normalizeTime(data.sunTransit),
+    sunSet: normalizeTime(data.sunSet),
+    moonRise: normalizeTime(data.moonRise),
+    moonTransit: normalizeTime(data.moonTransit),
+    moonUnderfoot: normalizeTime(data.moonUnderfoot),
+    moonSet: normalizeTime(data.moonSet),
     moonPhase: data.moonPhase,
     moonIllumination: data.moonIllumination,
-    majorPeriods: data.majorPeriods,
-    minorPeriods: data.minorPeriods,
+    majorPeriods: data.majorPeriods.map((period) => ({
+      start: normalizeTime(period.start),
+      end: normalizeTime(period.end),
+    })),
+    minorPeriods: data.minorPeriods.map((period) => ({
+      start: normalizeTime(period.start),
+      end: normalizeTime(period.end),
+    })),
     dayRating: data.dayRating,
     hourlyRating: data.hourlyRating,
   });

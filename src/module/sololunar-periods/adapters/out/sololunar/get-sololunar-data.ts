@@ -16,10 +16,12 @@ export function getSolunarDataFunc({ http }: Deps) {
     date,
     timezone,
   }: SolunarQueryParams): Promise<SolunarPeriod> {
-    const formattedDate = date.replace(/-/g, "");
+    const formattedDate = date.toISOString().slice(0, 10).replace(/-/g, "");
     const url = `https://api.solunar.org/solunar/${latitude},${longitude},${formattedDate},${timezone}`;
     const result = await http.get(url);
     const { data } = result;
+
+    console.log(data);
 
     return makeSolunarPeriod({
       date: new Date(date),

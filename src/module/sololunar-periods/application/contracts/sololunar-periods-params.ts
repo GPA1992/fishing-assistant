@@ -1,6 +1,6 @@
 export type SolunarQueryParams = {
   latitude: number;
   longitude: number;
-  date: string;
+  date: Date;
   timezone: number;
 };
