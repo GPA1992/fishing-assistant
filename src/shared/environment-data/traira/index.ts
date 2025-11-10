@@ -1,11 +1,10 @@
-import { environmentDataType } from "../types";
 import * as climaticConditionsCalc from "./climatic-condition-calc";
 import * as moonPhaseCalc from "./moon-phases-calc";
 import * as sololunarCalc from "./sololunar-calc";
 import * as rainCalc from "./rain-condition-calc";
 
 // talvez seja necessario ignorar showers
-const trairaEnvironmentSpecification: environmentDataType = {
+const trairaEnvironmentSpecification = {
   climaticConditions: {
     temperature: `# Temperatura do Ar (Traíra)
 - **<12°C:** Ar frio derruba rápido a temperatura da água rasa. Traíra fica parada em fundos e poços. Ataques quase inexistentes.
