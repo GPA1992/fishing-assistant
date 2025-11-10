@@ -29,17 +29,6 @@ export const WeatherDataResponseSchema = DataResponseSchema(
 );
 export type WeatherDataResponse = Static<typeof WeatherDataResponseSchema>;
 
-export const GetRainDataQuerySchema = Type.Object(
-  {
-    latitude: Type.Number(),
-    longitude: Type.Number(),
-    datetime: Type.String({ format: "date-time" }),
-  },
-  { additionalProperties: false }
-);
-
-export type GetRainDataQuery = Static<typeof GetRainDataQuerySchema>;
-
 export const RainDataEntitySchema = Type.Object(
   {
     time: Type.String(),

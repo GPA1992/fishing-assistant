@@ -27,7 +27,6 @@ export function getAllWeatherDataFunc() {
     };
 
     const responses = await fetchWeatherApi(apiUrl, requestParams);
-    console.log("@@@response", responses[0]);
 
     const response = responses[0];
     const hourly = response.hourly();

@@ -9,29 +9,34 @@ export function getRainDataFunc() {
   return async function getRainData(
     params: WeatherQueryParams
   ): Promise<HourlyResponseData<RainData>> {
+    const y = params.datetime.getUTCFullYear();
+    const m = String(params.datetime.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(params.datetime.getUTCDate()).padStart(2, "0");
+
     const requestParams = {
       latitude: params.latitude,
       longitude: params.longitude,
+      start_date: `${y}-${m}-${d}`,
+      end_date: `${y}-${m}-${d}`,
       hourly: ["precipitation_probability", "precipitation", "rain", "showers"],
     };
 
     const responses = await fetchWeatherApi(apiUrl, requestParams);
+
     const response = responses[0];
+
     const hourly = response.hourly();
-    const utcOffsetSeconds = response.utcOffsetSeconds();
 
     if (!hourly) {
-      throw new Error("Dados de precipitação não disponíveis");
+      throw new Error("Dados meteorológicos não disponíveis");
     }
 
     const timeStart = Number(hourly.time());
+    const timeEnd = Number(hourly.timeEnd());
+
     const interval = hourly.interval();
-    const times = Array.from({
-      length: (Number(hourly.timeEnd()) - timeStart) / interval,
-    }).map((_, i) =>
-      new Date(
-        (timeStart + i * interval + utcOffsetSeconds) * 1000
-      ).toISOString()
+    const times = Array.from({ length: (timeEnd - timeStart) / interval }).map(
+      (_, i) => new Date((timeStart + i * interval) * 1000).toISOString()
     );
 
     const probability = hourly.variables(0)?.valuesArray() ?? [];
@@ -47,14 +52,17 @@ export function getRainDataFunc() {
       showers: showers[i],
     }));
 
-    const targetHour = params.datetime.getUTCHours();
-    const index = times.findIndex(
-      (t) => new Date(t).getUTCHours() === targetHour
+    // match por data+hora exata em UTC
+    const targetMs = Date.UTC(
+      y,
+      params.datetime.getUTCMonth(),
+      params.datetime.getUTCDate(),
+      params.datetime.getUTCHours(),
+      0,
+      0,
+      0
     );
-
-    if (index === -1) {
-      throw new Error("Hora alvo não encontrada nos dados");
-    }
+    const index = times.findIndex((t) => new Date(t).getTime() === targetMs);
 
     return {
       hourly: hourlyData,

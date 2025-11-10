@@ -1,9 +1,9 @@
 import { FastifyPluginAsync } from "fastify";
 import { Value } from "@sinclair/typebox/value";
 import {
-  GetRainDataQuery,
-  GetRainDataQuerySchema,
   RainDataResponseSchema,
+  WeatherDataQuery,
+  WeatherDataQuerySchema,
 } from "./schemas";
 import { withErrorBoundary } from "../../../shared/libs/error-handler";
 import { AppResponse, HttpStatus } from "../../../shared/types";
@@ -16,18 +16,21 @@ export const getRainDataGetRoute: FastifyPluginAsync = async (fastify) => {
       schema: {
         tags: ["Weather"],
         summary: "Obtém probabilidade e volume de chuva",
-        querystring: GetRainDataQuerySchema,
-        response: { 200: RainDataResponseSchema },
+        querystring: WeatherDataQuerySchema,
       },
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
-        const dto = request.query as GetRainDataQuery;
-
+        const dto = request.query as WeatherDataQuery;
+        const date = new Date();
+        date.setUTCFullYear(date.getUTCFullYear());
+        date.setUTCMonth(parseInt(dto.targetMonth) - 1);
+        date.setUTCDate(parseInt(dto.targetDay));
+        date.setUTCHours(parseInt(dto.targetHour), 0, 0, 0);
         const data = await getRainData({
           latitude: dto.latitude,
           longitude: dto.longitude,
-          datetime: new Date(dto.datetime),
+          datetime: date,
         });
 
         const response: AppResponse = {

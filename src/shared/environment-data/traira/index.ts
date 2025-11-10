@@ -1,5 +1,6 @@
 import { environmentDataType } from "../types";
 
+// talvez seja necessario ignorar showers
 const traira: environmentDataType = {
   climaticConditions: {
     temperature: `# Temperatura do Ar (Traíra)
@@ -63,21 +64,22 @@ const traira: environmentDataType = {
   },
   rain: {
     volume: `# Volume de Chuva
-- **Chuvas leves/garoa:** Não espantam a traíra. O peixe segue ativo e pode até melhorar a caça em dias quentes. Mantém a água estável e evita superaquecimento. :contentReference[oaicite:0]{index=0}
-- **Chuvas fortes/torrenciais:** Prejudicam muito. Deixam a água turva, agitada e com baixa visibilidade. A traíra para ou busca abrigo. Representa baixa produtividade. :contentReference[oaicite:1]{index=1}
-- **Pós-chuvarada:** Água barrenta. Exige iscas de cor forte, rattlin ou alta vibração. :contentReference[oaicite:2]{index=2}
+- **Chuvas leves/garoa:** Não espantam a traíra. O peixe segue ativo e pode até melhorar a caça em dias quentes. Mantém a água estável e evita superaquecimento.
+- **Chuvas fortes/torrenciais:** Prejudicam muito. Deixam a água turva, agitada e com baixa visibilidade. A traíra para ou busca abrigo. Representa baixa produtividade.
+- **Pós-chuvarada:** Água barrenta. Exige iscas de cor forte, rattlin ou alta vibração.
 ## Estratégia
 - **Volume leve:** Continuar pescando. Em calor, pode até melhorar.
 - **Volume forte:** Parar. Aguardar estabilizar.
 `,
     showers: `# Showers (Pancadas rápidas)
-- **Pancadas isoladas:** Extremamente produtivas após cessarem. Assim que a chuva para, a traíra entra em atividade intensa com ataques imediatos. Ocorre por mudança brusca na luz, queda de temperatura e renovação de oxigênio na superfície. :contentReference[oaicite:3]{index=3}
+- **Pancadas isoladas:** Extremamente produtivas após cessarem. Assim que a chuva para, a traíra entra em atividade intensa com ataques imediatos. Ocorre por mudança brusca na luz,  queda de temperatura e renovação de oxigênio na superfície. 
 ## Estratégia
 - **Showers:** Esperar a pancada passar e lançar imediatamente após. Alta chance de ataque.
 `,
     probability: `# Probabilidade de Chuva
-- **Alta probabilidade (chuva prevista):** Indica forte chance de pico de atividade **antes** da chuva. A traíra intensifica a alimentação nas horas que antecedem o mau tempo por perceber variação de pressão, umidade e luminosidade. :contentReference[oaicite:4]{index=4}
-- **Tempestade real chegando:** Atividade cai quando o temporal já está formado. Em caso de raios, interromper a pescaria. :contentReference[oaicite:5]{index=5}
+- **Alta probabilidade (chuva prevista):** 
+Indica forte chance de pico de atividade **antes** da chuva. A traíra intensifica a alimentação nas horas que antecedem o mau tempo por perceber variação de pressão, umidade e luminosidade.
+- **Tempestade real chegando:** Atividade cai quando o temporal já está formado. Em caso de raios, interromper a pescaria. 
 `,
   },
   moonPhase: {
