@@ -5,7 +5,9 @@ export const WeatherDataQuerySchema = Type.Object(
   {
     latitude: Type.Number(),
     longitude: Type.Number(),
-    datetime: Type.String({ format: "date-time" }),
+    targetDay: Type.String(),
+    targetMonth: Type.String(),
+    targetHour: Type.String(),
   },
   { additionalProperties: false }
 );
@@ -22,7 +24,9 @@ export const WeatherDataSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export const WeatherDataResponseSchema = DataResponseSchema(WeatherDataSchema);
+export const WeatherDataResponseSchema = DataResponseSchema(
+  Type.Array(WeatherDataSchema)
+);
 export type WeatherDataResponse = Static<typeof WeatherDataResponseSchema>;
 
 export const GetRainDataQuerySchema = Type.Object(

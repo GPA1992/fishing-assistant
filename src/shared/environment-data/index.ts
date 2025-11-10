@@ -1,6 +1,8 @@
 import traira from "./traira";
+import { environmentDataType } from "./types";
 
-export const environmentData = {
+export type FishList = "traira";
+export const environmentData: Record<FishList, environmentDataType> = {
   traira: {
     ...traira,
   },

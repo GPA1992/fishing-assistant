@@ -1,4 +1,6 @@
-export default {
+import { environmentDataType } from "../types";
+
+const traira: environmentDataType = {
   climaticConditions: {
     temperature: `# Temperatura do Ar (Traíra)
 - **<12°C:** Ar frio derruba rápido a temperatura da água rasa. Traíra fica parada em fundos e poços. Ataques quase inexistentes.
@@ -16,12 +18,13 @@ export default {
 - **Quente (24–30°C):** Melhor condição geral. Focar superfície e cobertura vegetal. Alternar velocidade conforme horário.
 - **Calor extremo (>30°C):** Pescar somente cedo/tarde. Procurar sombra dura, árvores caídas e trechos profundos.
 `,
-    humidity: `# Umidade Relativa (Traíra)
+    humidity: `
+# Umidade Relativa (Traíra)
 - **>85%:** Geralmente indica céu nublado, neblina ou ameaça de chuva. Luz difusa reduz contraste e a traíra pode ficar menos ativa, dificultando a caça visual.
-- **70–85%:** Ambiente úmido comum em dias nublados. Atividade tende a ser mais irregular. Pode melhorar antes/depóis de pancadas rápidas, mas estabiliza em nível mediano.
-- **50–70%:** Faixa neutra. Condições variáveis conforme vento, cobertura e temperatura. Não afeta diretamente, mas modula transparência do ar e luminosidade.
-- **<50%:** Ar seco associado a céu limpo. Maior contraste de luz. Facilidade para a traíra localizar presas. Considerado cenário mais favorável no estudo.
-- **<35% (muito seco):** Céu extremamente limpo. Alta incidência solar. Bom pela manhã e tarde; no pico do sol aumenta aquecimento superficial e queda de O₂.
+- **70–85%:** Ambiente úmido comum em dias nublados. Atividade tende a ser mais irregular. Pode melhorar antes/depois de pancadas rápidas, mas estabiliza em nível mediano.
+- **50–70%:** Faixa neutra. Condições variam conforme vento, cobertura e temperatura. Não afeta diretamente o comportamento, mas modula transparência do ar e luminosidade.
+- **<50%:** Ar seco associado a céu limpo. Maior contraste de luz. Facilita a localização de presas. Considerado cenário mais favorável no estudo.
+- **<35% (muito seco):** Normalmente indica céu muito limpo e forte incidência solar. O aquecimento superficial da água pode reduzir o O₂ na camada superior, levando a traíra a descer ou reduzir atividade no pico do calor.
 
 ## Estratégia
 - **Umidade alta (>80%):** Priorizar horários com melhor luz (janela entre dissipação de neblina e início de chuva). Usar iscas de maior vibração ou cor marcante.
@@ -123,7 +126,6 @@ export default {
 ## Estratégia
 - Estar no melhor ponto durante toda a janela.
 - Manter a isca ativa e cobrindo a estrutura com constância.`,
-
     minorPeriods: `# Períodos Menores
 - Surgem no **nascer da Lua (moonRise)** e no **pôr da Lua (moonSet)**.
 - **Duração média:** 1 hora.
@@ -134,3 +136,5 @@ export default {
 - Alternar iscas caso o período maior tenha sido fraco.`,
   },
 };
+
+export default traira;

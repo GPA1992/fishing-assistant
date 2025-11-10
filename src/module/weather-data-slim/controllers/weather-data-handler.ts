@@ -17,17 +17,21 @@ export const weaterDataGetRoute: FastifyPluginAsync = async (fastify) => {
         tags: ["Weather"],
         summary: "Obtém dados meteorológicos por coordenada e data",
         querystring: WeatherDataQuerySchema,
-        response: { 200: WeatherDataResponseSchema },
       },
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
         const dto = request.query as WeatherDataQuery;
 
+        const date = new Date();
+        date.setUTCFullYear(date.getUTCFullYear());
+        date.setUTCMonth(parseInt(dto.targetMonth) - 1);
+        date.setUTCDate(parseInt(dto.targetDay));
+        date.setUTCHours(parseInt(dto.targetHour), 0, 0, 0);
         const core = await getAllWeatherData({
           latitude: dto.latitude,
           longitude: dto.longitude,
-          datetime: new Date(dto.datetime),
+          datetime: date,
         });
 
         const response: AppResponse = {
