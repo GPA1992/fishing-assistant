@@ -29,10 +29,11 @@ export const getDayScoreRoute: FastifyPluginAsync = async (fastify) => {
           longitude: dto.longitude,
           datetime: date,
           timezone: dto.timezone,
+          fishList: [dto.fishList as any],
         });
 
         const response: AppResponse = {
-          message: "Dados de chuva recuperados com sucesso",
+          message: "Score",
           code: HttpStatus.OK,
           data,
         };

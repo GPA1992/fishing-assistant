@@ -1,17 +1,15 @@
-import { environmentDataByFish } from "../../../shared/environment-data";
-import { getAstronomicalData } from "../../moon-phase-data/application";
 import { getSoloLunarPeriods } from "../../sololunar-periods/application";
 import { HourlyResponseData } from "../../weather-data-slim/contracts/in/contracts.in.response";
-import {
-  getAllWeatherData,
-  getRainData,
-} from "../../weather-data-slim/services";
+import { getAllWeatherData } from "../../weather-data-slim/services";
 import { ScoreQueryParams } from "../contracts/in/get-day-score.in.params";
-import { ScoreData } from "../domain/day-score-metrics.entity";
+import {
+  MakeDayScoreData,
+  DayScoreByFish,
+} from "../domain/day-score-metrics.entity";
 
 type GetScoreData = (
   params: ScoreQueryParams
-) => Promise<HourlyResponseData<ScoreData>>;
+) => Promise<HourlyResponseData<DayScoreByFish>>;
 
 export function getScoreDayService(): GetScoreData {
   return async function geScoreData({
@@ -19,44 +17,44 @@ export function getScoreDayService(): GetScoreData {
     latitude,
     longitude,
     timezone,
-  }: ScoreQueryParams): Promise<HourlyResponseData<ScoreData>> {
-    const raindData = getRainData({
+    fishList,
+  }: ScoreQueryParams): Promise<HourlyResponseData<DayScoreByFish>> {
+    const weatherDataResult = await getAllWeatherData({
       datetime,
       latitude,
       longitude,
     });
 
-    const waeatherData = getAllWeatherData({
-      datetime,
-      latitude,
-      longitude,
-    });
-
-    const sololunarData = getSoloLunarPeriods({
+    const app = await getSoloLunarPeriods({
+      latitude: Number(latitude),
+      longitude: Number(longitude),
       date: datetime,
-      latitude,
-      longitude,
       timezone: Number(timezone),
     });
 
-    const moonPhasesData = getAstronomicalData({
+    /* const moonPhasesData = getAstronomicalData({
       datetime,
       latitude,
       longitude,
     });
+ */
 
-    const [
-      rainDataResult,
-      weatherDataResult,
-      sololunarDataResult,
-      moonPhasesDataResult,
-    ] = await Promise.all([
-      raindData,
-      waeatherData,
-      sololunarData,
-      moonPhasesData,
-    ]);
+    /*     console.log(sololunarData); */
 
-    return {} as HourlyResponseData<ScoreData>;
+    const hourlyData = weatherDataResult.hourly.map((data) => {
+      return MakeDayScoreData({ ...data, fishList });
+    });
+
+    const targetHour = MakeDayScoreData({
+      ...weatherDataResult.targetHour,
+      fishList,
+    });
+
+    const result: HourlyResponseData<DayScoreByFish> = {
+      hourly: hourlyData,
+      targetHour: targetHour,
+    };
+
+    return result;
   };
 }

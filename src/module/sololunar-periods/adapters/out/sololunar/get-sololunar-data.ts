@@ -21,8 +21,6 @@ export function getSolunarDataFunc({ http }: Deps) {
     const result = await http.get(url);
     const { data } = result;
 
-    console.log(data);
-
     return makeSolunarPeriod({
       date: new Date(date),
       sunRise: data.sunRise,

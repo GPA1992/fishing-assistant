@@ -46,8 +46,6 @@ export const getSolunarPeriodsHandler: FastifyPluginAsync = async (fastify) => {
           timezone: Number(timezone),
         });
 
-        console.log(app);
-
         const response: AppResponse = {
           data: app,
           message: "Períodos solunares retornados com sucesso!",

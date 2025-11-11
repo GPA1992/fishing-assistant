@@ -12,6 +12,8 @@ export function getSolunarPeriodsUseCase(
   return async function getSolunarPeriods(
     params: SolunarQueryParams
   ): Promise<SolunarPeriod> {
-    return solunarPort.getSolunarData(params);
+    console.log("@@@ params sololunar", params);
+
+    return await solunarPort.getSolunarData(params);
   };
 }

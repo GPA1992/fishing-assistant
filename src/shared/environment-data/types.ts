@@ -44,22 +44,50 @@ export interface environmentDataType {
     moonRise: string;
     moonSet: string;
   };
-  calcScoreFunctions: {
-    climaticConditionsCalc: {
-      humidityScore: (h: number) => number;
-      pressureScore: (p: number) => number;
-      temperatureScore: (tempC: number) => number;
-      windScore: (w: number) => number;
-    };
-    moonPhaseCalc: { moonPhaseScore: (phase: number) => number };
-    rainCalc: { rainScore: (context: RainContext) => number };
-    sololunarCalc: {
-      solunarScores: (input: SolunarInput) => {
-        solunarDailyScore: number;
-        solunarHourlyScore: Record<number, number>;
-      };
+}
+
+export type calcScoreFunctions = {
+  climaticConditionsCalc: {
+    humidityScore: (h: number) => number;
+    pressureScore: (p: number) => number;
+    temperatureScore: (tempC: number) => number;
+    windScore: (w: number) => number;
+  };
+  moonPhaseCalc: { moonPhaseScore: (phase: number) => number };
+  rainCalc: { rainScore: (context: RainContext) => number };
+  sololunarCalc: {
+    solunarScores: (input: SolunarInput) => {
+      solunarDailyScore: number;
+      solunarHourlyScore: Record<number, number>;
     };
   };
-}
+};
+
+export type calculateTotalScoreBySpecieType = {
+  calculateTotalScoreBySpecie: (
+    props: TotalCalcParams,
+    fish: fishList[]
+  ) => Record<fishList, TotalCalcResult>;
+};
+export type TotalCalcParams = Readonly<{
+  time: string;
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  windSpeed: number;
+  probability: number;
+  total: number;
+  rain: number;
+  showers: number;
+}>;
+
+export type TotalCalcResult = Readonly<{
+  tempScore: number;
+  humidityScore: number;
+  pressureScore: number;
+  windScore: number;
+  rainScore: number;
+  hourlyScore: number;
+}>;
 
 export type fishList = "traira";

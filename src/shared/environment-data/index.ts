@@ -1,3 +1,4 @@
+import { calculateTotalScoreBySpecie } from "./algorithms/total-calc";
 import {
   trairaEnvironmentSpecification,
   climaticConditionsCalc as trairaClimaticConditionsCalc,
@@ -5,16 +6,28 @@ import {
   rainCalc as trairaRainCalc,
   sololunarCalc as trairaSololunarCalc,
 } from "./traira";
-import { environmentDataType, fishList } from "./types";
+import {
+  calcScoreFunctions,
+  calculateTotalScoreBySpecieType,
+  environmentDataType,
+  fishList,
+} from "./types";
 
 export const environmentDataByFish: Record<fishList, environmentDataType> = {
   traira: {
     ...trairaEnvironmentSpecification,
-    calcScoreFunctions: {
-      climaticConditionsCalc: trairaClimaticConditionsCalc,
-      moonPhaseCalc: trairaMoonPhaseCalc,
-      rainCalc: trairaRainCalc,
-      sololunarCalc: trairaSololunarCalc,
-    },
+  },
+};
+
+export const calTotalScore: calculateTotalScoreBySpecieType = {
+  calculateTotalScoreBySpecie: calculateTotalScoreBySpecie,
+};
+
+export const calcFuncBySpecie: Record<fishList, calcScoreFunctions> = {
+  traira: {
+    climaticConditionsCalc: trairaClimaticConditionsCalc,
+    moonPhaseCalc: trairaMoonPhaseCalc,
+    rainCalc: trairaRainCalc,
+    sololunarCalc: trairaSololunarCalc,
   },
 };
