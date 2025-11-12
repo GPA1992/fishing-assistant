@@ -1,4 +1,5 @@
 import { Sololunar } from "../../module/sololunar-periods/domain/sololunar-periods-data";
+import { SolunarPeriodsData } from "./traira/sololunar-calc";
 
 export type RainContext = {
   volumeMmPerHour: number; // volume total de precipitação (mm/h)
@@ -82,9 +83,11 @@ export type TotalCalcParams = Readonly<{
   rain: number;
   showers: number;
   localHour: number;
+  localHourDec: number;
   pressureTrend6h: number;
   sololunarScore: number;
   sixHourTemp: number;
+  solunarPeriodsData: SolunarPeriodsData;
 }>;
 
 export type TotalCalcResult = Readonly<{

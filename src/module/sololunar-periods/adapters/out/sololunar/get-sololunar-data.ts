@@ -2,7 +2,7 @@ import axios from "axios";
 import { SolunarQueryParams } from "../../../application";
 import {
   makeSolunarPeriod,
-  SolunarPeriod,
+  Sololunar,
 } from "../../../domain/sololunar-periods-data";
 
 type Deps = {
@@ -14,35 +14,15 @@ export function getSolunarDataFunc({ http }: Deps) {
     latitude,
     longitude,
     date,
-  }: SolunarQueryParams): Promise<SolunarPeriod> {
+  }: SolunarQueryParams): Promise<Sololunar> {
     const formattedDate = date.toISOString().slice(0, 10).replace(/-/g, "");
     const url = `https://api.solunar.org/solunar/${latitude},${longitude},${formattedDate},-3`;
-    console.log("@@@@@@@@@@@@@@@@@@ URL =>", url);
 
     const result = await http.get(url);
     const { data } = result;
 
     return makeSolunarPeriod({
-      date: new Date(date),
-      sunRise: data.sunRise,
-      sunTransit: data.sunTransit,
-      sunSet: data.sunSet,
-      moonRise: data.moonRise,
-      moonTransit: data.moonTransit,
-      moonUnderfoot: data.moonUnder,
-      moonSet: data.moonSet,
-      moonPhase: data.moonPhase,
-      moonIllumination: data.moonIllumination,
-      majorPeriods: [
-        { start: data.major1Start, end: data.major1Stop },
-        { start: data.major2Start, end: data.major2Stop },
-      ],
-      minorPeriods: [
-        { start: data.minor1Start, end: data.minor1Stop },
-        { start: data.minor2Start, end: data.minor2Stop },
-      ],
-      dayRating: data.dayRating,
-      hourlyRating: data.hourlyRating,
+      ...data,
     });
   };
 }

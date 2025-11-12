@@ -9,7 +9,6 @@ export const solunarQuerySchema = Type.Object(
     targetDay: Type.String(),
     targetMonth: Type.String(),
     targetHour: Type.String(),
-    timezone: Type.Number(),
   },
   { additionalProperties: false }
 );

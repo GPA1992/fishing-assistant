@@ -31,43 +31,7 @@ export function getScoreDayService(): GetScoreData {
       date: datetime,
     });
 
-    /* const moonPhasesData = getAstronomicalData({
-      datetime,
-      latitude,
-      longitude,
-    });
- */
-
     let resultByFish = {} as any;
-
-    /* fishList.forEach((f) => {
-      if (!resultByFish[f]) resultByFish[f] = { hourly: [] };
-      hourlyData.map((h) => {
-        if (!resultByFish[f]) {
-          resultByFish[f]["hourly"] = [{ ...h[f] }];
-        }
-        if (resultByFish[f]) {
-          resultByFish[f].hourly.push({
-            ...h[f],
-          });
-        }
-      });
-      if (!resultByFish[f].targetHour) {
-        const hour = new Date(weatherDataResult.targetHour.time)
-          .getHours()
-          .toString() as keyof (typeof sololunarData)["hourlyRating"];
-
-        const target = MakeDayScoreData({
-          ...weatherDataResult.targetHour,
-          fishList,
-          sololunarScore: sololunarData.hourlyRating[hour],
-        })[f];
-
-        resultByFish[f].targetHour = {
-          ...target,
-        };
-      }
-    }); */
 
     const { calculateTotalScoreBySpecie } = calTotalScore;
 
@@ -86,6 +50,8 @@ export function getScoreDayService(): GetScoreData {
         (row) => row.temperature
       );
 
+      const dt = new Date(w.time);
+
       const calc = calculateTotalScoreBySpecie(
         {
           humidity: w.humidity,
@@ -98,9 +64,11 @@ export function getScoreDayService(): GetScoreData {
           showers: w.showers,
           sololunarScore: sololunarBonus,
           temperature: w.temperature,
-          localHour: new Date(w.time).getUTCHours(),
+          localHour: dt.getUTCHours(),
+          localHourDec: dt.getUTCHours() + dt.getUTCMinutes() / 60,
           pressureTrend6h: w.pressureTrend6h,
           sixHourTemp,
+          solunarPeriodsData: { ...sololunarData },
         },
         fishList
       );

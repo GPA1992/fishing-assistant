@@ -1,5 +1,9 @@
 import { clamp, smoothLerp } from ".";
 import { calcFuncBySpecie } from "..";
+import {
+  computeMoonBonusPoints,
+  computeSolunarBonusPoints,
+} from "../traira/sololunar-calc";
 import { fishList, TotalCalcParams, TotalCalcResult } from "../types";
 
 const WEIGHTS = {
@@ -61,12 +65,25 @@ export const calcFinalScore = (
     WEIGHTS.wind +
     WEIGHTS.humidity +
     WEIGHTS.rain;
-  let hourlyScore =
-    (tempScore + humidityScore + pressureScoreW + windScoreW + rainScoreW) /
-    sumW;
 
-  const mod = diurnalModifier(props.localHour, props.sixHourTemp);
-  hourlyScore = Math.round(clamp(hourlyScore * mod, 0, 100) * 1000) / 1000;
+  const diurnal = diurnalModifier(props.localHour ?? 12, props.temperature);
+  const activePart = (tempScore + windScoreW + rainScoreW) * diurnal;
+  const passivePart = humidityScore + pressureScoreW;
+
+  const hourDec = props.localHourDec;
+  const moonBonus = computeMoonBonusPoints(
+    props.solunarPeriodsData?.moonIllumination
+  );
+  const solunarBonus = props.solunarPeriodsData
+    ? computeSolunarBonusPoints(props.solunarPeriodsData, hourDec)
+    : 0;
+
+  // cap geral de bônus combinados: +8
+  const combinedBonus = Math.min(moonBonus + solunarBonus, 8);
+
+  let hourlyScore = (activePart + passivePart) / sumW;
+  hourlyScore = clamp(hourlyScore + combinedBonus, 0, 100);
+  hourlyScore = Math.round(hourlyScore * 1000) / 1000;
 
   return Object.freeze({
     tempScore,
@@ -75,6 +92,8 @@ export const calcFinalScore = (
     windScore: windScoreW,
     rainScore: rainScoreW,
     hourlyScore,
+    moonBonus,
+    solunarBonus,
   });
 };
 export const calculateTotalScoreBySpecie = (
@@ -88,33 +107,3 @@ export const calculateTotalScoreBySpecie = (
 
   return result;
 };
-
-// data[i] é { time, temperature, ... }
-// janela: tamanho ímpar (3, 5, 7...). Borda usa menos pontos automaticamente.
-export function mediaMovelCentradaObj<T>(
-  data: T[],
-  indice: number,
-  janela: number,
-  selecionar: (row: T) => number
-): number {
-  const tamanho = data.length;
-  if (tamanho === 0) return NaN;
-
-  const largura = Math.max(1, janela | 0);
-  const impar = largura % 2 === 1 ? largura : largura + 1; // força ímpar
-  const metade = Math.floor(impar / 2);
-
-  const inicio = Math.max(0, indice - metade);
-  const fim = Math.min(tamanho - 1, indice + metade);
-
-  let soma = 0;
-  let cont = 0;
-  for (let k = inicio; k <= fim; k++) {
-    const v = selecionar(data[k]);
-    if (Number.isFinite(v)) {
-      soma += v;
-      cont++;
-    }
-  }
-  return cont ? soma / cont : selecionar(data[indice]);
-}

@@ -18,21 +18,12 @@ export const getSolunarPeriodsHandler: FastifyPluginAsync = async (fastify) => {
         tags: ["Astronomical Data"],
         summary: "Lista períodos solunares",
         querystring: solunarQuerySchema,
-        response: {
-          200: SolunarPeriodsResponseSchema,
-        },
       },
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
-        const {
-          latitude,
-          longitude,
-          timezone,
-          targetDay,
-          targetHour,
-          targetMonth,
-        } = request.query as SolunarQueryParams;
+        const { latitude, longitude, targetDay, targetHour, targetMonth } =
+          request.query as SolunarQueryParams;
 
         const date = new Date();
         date.setUTCFullYear(date.getUTCFullYear());
@@ -43,7 +34,6 @@ export const getSolunarPeriodsHandler: FastifyPluginAsync = async (fastify) => {
           latitude: Number(latitude),
           longitude: Number(longitude),
           date: date,
-          timezone: Number(timezone),
         });
 
         const response: AppResponse = {

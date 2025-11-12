@@ -45,4 +45,48 @@ function movingAverageCentered<T>(
   return cnt ? sum / cnt : pick(data[index]);
 }
 
-export { clamp, clamp01, smoothStep, smoothLerp, movingAverageCentered };
+function hhmmToMinutes(hhmm: string): number {
+  const [h, m] = hhmm.split(":").map(Number);
+  return (h % 24) * 60 + (m % 60);
+}
+
+function windowProximity(
+  nowMin: number,
+  startMin: number,
+  endMin: number,
+  rampMin: number
+): number {
+  if (endMin < startMin) endMin += 24 * 60;
+  let t = nowMin;
+  if (t < startMin) t += 24 * 60;
+  if (t > endMin) return 0;
+
+  const enter = smoothLerp(t, startMin - rampMin, startMin, 0, 1);
+  const exit = smoothLerp(t, endMin, endMin + rampMin, 1, 0);
+  return clamp(Math.min(enter, exit), 0, 1);
+}
+
+function minutesToEvent(
+  nowMin: number,
+  eventHHMM?: string
+): number | undefined {
+  if (!eventHHMM) return undefined;
+  const e = hhmmToMinutes(eventHHMM);
+  const diff = Math.min(
+    Math.abs(nowMin - e),
+    Math.abs(nowMin + 1440 - e),
+    Math.abs(nowMin - (e + 1440))
+  );
+  return diff;
+}
+
+export {
+  clamp,
+  clamp01,
+  smoothStep,
+  smoothLerp,
+  movingAverageCentered,
+  minutesToEvent,
+  windowProximity,
+  hhmmToMinutes,
+};
