@@ -12,16 +12,31 @@ export const humidityScore = (h: number) => {
   return 60; // <25%: seco demais, penaliza mais
 };
 
-export const pressureScore = (p: number): number => {
-  if (p >= 1030) return 60; // alta bem forte
-  if (p >= 1022) return smoothLerp(p, 1022, 1030, 85, 60); // 1022→1030: 85→60
-  if (p >= 1016) return smoothLerp(p, 1016, 1022, 100, 85); // 1016→1022: 100→85
-  if (p >= 1010) return smoothLerp(p, 1010, 1016, 90, 100); // 1010→1016: 90→100
-  if (p >= 1005) return smoothLerp(p, 1005, 1010, 75, 90); // 1005→1010: 75→90
-  if (p >= 995) return smoothLerp(p, 995, 1005, 60, 75); // 995→1005: 60→75
-  if (p >= 980) return smoothLerp(p, 980, 995, 50, 60); // 980→995: 50→60
-  return 45; // <980
-};
+// clima/pressure.ts
+export function pressureScore(p: number, dp6h?: number): number {
+  // base pelo valor absoluto
+  let base: number;
+  if (p >= 1030) base = 60;
+  else if (p >= 1022) base = smoothLerp(p, 1022, 1030, 85, 60);
+  else if (p >= 1016) base = smoothLerp(p, 1016, 1022, 100, 85);
+  else if (p >= 1010) base = smoothLerp(p, 1010, 1016, 90, 100);
+  else if (p >= 1005) base = smoothLerp(p, 1005, 1010, 75, 90);
+  else if (p >= 995) base = smoothLerp(p, 995, 1005, 60, 75);
+  else if (p >= 980) base = smoothLerp(p, 980, 995, 50, 60);
+  else base = 45;
+
+  // ajuste por tendência nas últimas ~6h (hPa)
+  if (typeof dp6h === "number") {
+    // queda negativa é bônus, alta positiva é penalidade
+    const fall = clamp(-dp6h, 0, 6); // até −6 hPa/6h
+    const rise = clamp(dp6h, 0, 6); // até +6 hPa/6h
+    const bonus = smoothLerp(fall, 0, 6, 0, 6);
+    const malus = smoothLerp(rise, 0, 6, 0, 12);
+    base = clamp(base + bonus - malus, 0, 100);
+  }
+
+  return Math.round(base);
+}
 
 export const temperatureScore = (tempC: number): number => {
   let score: number;
@@ -59,12 +74,13 @@ export const temperatureScore = (tempC: number): number => {
   return Math.round(clamp(score, 0, 100));
 };
 
+// clima/wind.ts
 export const windScore = (w: number): number => {
-  if (w <= 0) return 60; // calmaria total, ok mas não perfeito
-  if (w <= 4) return smoothLerp(w, 0, 4, 90, 100); // subindo para brisa ideal
-  if (w <= 8) return smoothLerp(w, 0, 8, 90, 100); // melhor faixa
-  if (w <= 18) return smoothLerp(w, 8, 18, 90, 70); // 8–18 km/h: ainda bom
-  if (w <= 28) return smoothLerp(w, 18, 28, 70, 40); // 18–28 km/h: vento forte, piorando
-  if (w <= 40) return smoothLerp(w, 28, 40, 40, 20); // >28 km/h: ventania
-  return 15; // extremo
+  if (w <= 0) return 55;
+  if (w <= 3) return smoothLerp(w, 0, 3, 85, 95); // pico em ~2–3 km/h
+  if (w <= 8) return smoothLerp(w, 3, 8, 95, 80); // começa a dispersar estímulos
+  if (w <= 18) return smoothLerp(w, 8, 18, 80, 60);
+  if (w <= 28) return smoothLerp(w, 18, 28, 60, 35);
+  if (w <= 40) return smoothLerp(w, 28, 40, 35, 20);
+  return 15;
 };

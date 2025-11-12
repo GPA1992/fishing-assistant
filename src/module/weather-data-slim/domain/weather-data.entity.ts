@@ -8,6 +8,7 @@ export type WeatherData = Readonly<{
   rain: number;
   showers: number;
   total: number;
+  pressureTrend6h: number;
 }>;
 
 export function makeWeatherData(props: {
@@ -20,6 +21,7 @@ export function makeWeatherData(props: {
   total: number;
   rain: number;
   showers: number;
+  pressureTrend6h: number;
 }): WeatherData {
   return Object.freeze({
     time: props.time,
@@ -31,5 +33,6 @@ export function makeWeatherData(props: {
     rain: props.rain,
     showers: props.showers,
     total: props.total,
+    pressureTrend6h: props.pressureTrend6h,
   });
 }

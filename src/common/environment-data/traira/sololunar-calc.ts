@@ -132,3 +132,35 @@ export const solunarScores = (input: SolunarInput) => {
     solunarHourlyScore,
   };
 };
+
+const r = solunarScores({
+  sunRise: "5:22",
+  sunTransit: "12:02",
+  sunSet: "18:43",
+  moonRise: "5:12",
+  moonTransit: "12:15",
+  moonUnderfoot: "0:39",
+  moonSet: "19:19",
+  majorPeriods: [
+    {
+      start: "11:15",
+      end: "13:15",
+    },
+    {
+      start: "-00:21",
+      end: "01:39",
+    },
+  ],
+  minorPeriods: [
+    {
+      start: "04:42",
+      end: "05:42",
+    },
+    {
+      start: "18:49",
+      end: "19:49",
+    },
+  ],
+});
+
+console.log(r);

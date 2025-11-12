@@ -28,16 +28,3 @@ export const WeatherDataResponseSchema = DataResponseSchema(
   Type.Array(WeatherDataSchema)
 );
 export type WeatherDataResponse = Static<typeof WeatherDataResponseSchema>;
-
-export const RainDataEntitySchema = Type.Object(
-  {
-    time: Type.String(),
-    probability: Type.Number(),
-    total: Type.Number(),
-    rain: Type.Number(),
-    showers: Type.Number(),
-  },
-  { additionalProperties: false }
-);
-
-export const RainDataResponseSchema = DataResponseSchema(RainDataEntitySchema);

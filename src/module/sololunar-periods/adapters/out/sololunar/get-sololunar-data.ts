@@ -14,10 +14,11 @@ export function getSolunarDataFunc({ http }: Deps) {
     latitude,
     longitude,
     date,
-    timezone,
   }: SolunarQueryParams): Promise<SolunarPeriod> {
     const formattedDate = date.toISOString().slice(0, 10).replace(/-/g, "");
-    const url = `https://api.solunar.org/solunar/${latitude},${longitude},${formattedDate},${timezone}`;
+    const url = `https://api.solunar.org/solunar/${latitude},${longitude},${formattedDate},-3`;
+    console.log("@@@@@@@@@@@@@@@@@@ URL =>", url);
+
     const result = await http.get(url);
     const { data } = result;
 

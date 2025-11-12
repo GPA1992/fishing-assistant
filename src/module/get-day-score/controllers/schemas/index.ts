@@ -9,7 +9,6 @@ export const ScoreDataQuerySchema = Type.Object(
     targetMonth: Type.String(),
     targetHour: Type.String(),
     fishList: Type.String(),
-    timezone: Type.Number(),
   },
   { additionalProperties: false }
 );

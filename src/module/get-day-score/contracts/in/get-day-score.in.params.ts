@@ -1,4 +1,4 @@
-import { fishList } from "../../../../shared/environment-data/types";
+import { fishList } from "../../../../common/environment-data/types";
 
 export interface ScoreQueryParams {
   latitude: number;
@@ -6,5 +6,4 @@ export interface ScoreQueryParams {
   datetime: Date;
 
   fishList: fishList[];
-  timezone: number;
 }

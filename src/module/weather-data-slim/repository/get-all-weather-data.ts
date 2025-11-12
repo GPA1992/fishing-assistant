@@ -8,10 +8,17 @@ export function getAllWeatherDataFunc() {
   return async function getAllWeatherData(
     params: WeatherQueryParams
   ): Promise<HourlyResponseData<WeatherData>> {
-    // garanta que params.datetime está preenchido com o dia/mês/ano/UTC corretos
     const y = params.datetime.getUTCFullYear();
     const m = String(params.datetime.getUTCMonth() + 1).padStart(2, "0");
     const d = String(params.datetime.getUTCDate()).padStart(2, "0");
+
+    /*  const dayBefore = new Date(
+      Date.UTC(
+        y,
+        params.datetime.getUTCMonth(),
+        params.datetime.getUTCDate() - 1
+      )
+    ); */
 
     const requestParams = {
       latitude: params.latitude,
@@ -29,6 +36,7 @@ export function getAllWeatherDataFunc() {
         "showers",
       ],
       wind_speed_unit: "kmh",
+      timezone: "UTC",
     };
 
     const responses = await fetchWeatherApi(apiUrl, requestParams);
@@ -60,20 +68,6 @@ export function getAllWeatherDataFunc() {
 
     const round2 = (x: number) => Math.round((x + Number.EPSILON) * 100) / 100;
 
-    const hourlyData = times.map((time, i) =>
-      makeWeatherData({
-        time,
-        temperature: round2(temperature[i]),
-        humidity: round2(humidity[i]),
-        pressure: round2(pressure[i]),
-        windSpeed: round2(windSpeed[i]),
-        probability: round2(probability[i]),
-        total: round2(total[i]),
-        rain: round2(rain[i]),
-        showers: round2(showers[i]),
-      })
-    );
-
     // match por data+hora exata em UTC
     const targetMs = Date.UTC(
       y,
@@ -86,6 +80,20 @@ export function getAllWeatherDataFunc() {
     );
     const index = times.findIndex((t) => new Date(t).getTime() === targetMs);
 
+    const hourlyData = times.map((time, i) =>
+      makeWeatherData({
+        time,
+        temperature: round2(temperature[i]),
+        humidity: round2(humidity[i]),
+        pressure: round2(pressure[i]),
+        windSpeed: round2(windSpeed[i]),
+        probability: round2(probability[i]),
+        total: round2(total[i]),
+        rain: round2(rain[i]),
+        showers: round2(showers[i]),
+        pressureTrend6h: i - 6 >= 0 ? round2(pressure[i] - pressure[i - 6]) : 0,
+      })
+    );
     return {
       hourly: hourlyData,
       targetHour: hourlyData[index],

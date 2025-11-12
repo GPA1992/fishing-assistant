@@ -1,3 +1,5 @@
+import { Sololunar } from "../../module/sololunar-periods/domain/sololunar-periods-data";
+
 export type RainContext = {
   volumeMmPerHour: number; // volume total de precipitação (mm/h)
   rainProbability: number; // probabilidade de chuva (0-100)
@@ -49,7 +51,7 @@ export interface environmentDataType {
 export type calcScoreFunctions = {
   climaticConditionsCalc: {
     humidityScore: (h: number) => number;
-    pressureScore: (p: number) => number;
+    pressureScore: (p: number, dp6h?: number) => number;
     temperatureScore: (tempC: number) => number;
     windScore: (w: number) => number;
   };
@@ -79,6 +81,10 @@ export type TotalCalcParams = Readonly<{
   total: number;
   rain: number;
   showers: number;
+  localHour: number;
+  pressureTrend6h: number;
+  sololunarScore: number;
+  sixHourTemp: number;
 }>;
 
 export type TotalCalcResult = Readonly<{

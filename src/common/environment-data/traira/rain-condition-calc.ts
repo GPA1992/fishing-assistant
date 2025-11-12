@@ -1,7 +1,7 @@
 import { clamp, smoothLerp } from "../algorithms";
 import { RainContext } from "../types";
 
-export function rainScore(context: RainContext): number {
+/* export function rainScore(context: RainContext): number {
   const volume = Math.max(0, context.volumeMmPerHour);
   const probability = clamp(context.rainProbability, 0, 100);
   const showerVolume = Math.max(0, context.showerVolumeMmPerHour);
@@ -41,6 +41,10 @@ export function rainScore(context: RainContext): number {
   let rainScore = 0;
 
   // 1) Base pelo volume/probabilidade
+
+  if (volume === 0 && probability === 0) {
+    rainScore = 0;
+  }
 
   if (volume === 0 && probability < 30) {
     rainScore = 60;
@@ -134,4 +138,76 @@ export function rainScore(context: RainContext): number {
   }
 
   return Math.round(clamp(rainScore, 0, 100));
+} */
+
+export function rainScore(ctx: RainContext): number {
+  const volume = Math.max(0, ctx.volumeMmPerHour);
+  const prob = clamp(ctx.rainProbability, 0, 100);
+  const showers = Math.max(0, ctx.showerVolumeMmPerHour);
+  const t = ctx.temperatureC;
+  const h = clamp(ctx.humidityPct, 0, 100);
+  const wind = Math.max(0, ctx.windSpeed);
+
+  const warm = t >= 24 && t <= 32;
+  const hot = t > 32;
+  const cold = t < 20;
+
+  const isStorm = volume >= 8 || (prob >= 70 && wind >= 25);
+  const isLight = volume > 0 && volume <= 2;
+  const isModerate = volume > 2 && volume <= 5;
+  const hasShowers = showers > 0 && volume <= 5;
+
+  let score = 0;
+
+  // 1) Base exclusiva por volume/probabilidade
+  if (volume === 0) {
+    if (prob === 0) {
+      score = 40; // totalmente seco: neutro-leve (sem bônus)
+    } else if (prob < 30) {
+      score = smoothLerp(prob, 0, 30, 45, 60);
+    } else if (prob < 70) {
+      score = smoothLerp(prob, 30, 70, 60, 75);
+    } else {
+      score = smoothLerp(prob, 70, 100, 75, 85);
+    }
+  } else if (isLight) {
+    score = smoothLerp(volume, 0, 2, 65, 78);
+  } else if (isModerate) {
+    score = smoothLerp(volume, 2, 5, 40, 25);
+  } else {
+    const v = clamp(volume, 5, 20);
+    score = smoothLerp(v, 5, 20, 25, 5);
+  }
+
+  // 2) Janela de pancada em dia quente e estável
+  const sunnyWarmStable = volume === 0 && prob < 40 && warm && h <= 75;
+  if (sunnyWarmStable && hasShowers) {
+    const v = clamp(volume, 0.5, 3);
+    const showerBonus = smoothLerp(v, 0.5, 3, 80, 95);
+    score = Math.max(score, showerBonus);
+  }
+
+  // 3) Pré-chuva quente: só se prob ≥ 30
+  if (volume === 0 && warm && prob >= 30) {
+    const pre = smoothLerp(prob, 30, 90, 70, 92);
+    score = Math.max(score, pre);
+  }
+
+  // 4) Penalizações
+  if (cold && volume > 0) score *= 0.5;
+  if (h > 95 && volume > 0 && !hasShowers) score *= 0.7;
+
+  if (isStorm) {
+    const v = clamp(volume, 8, 30);
+    const stormPenalty = smoothLerp(v, 8, 30, 15, 0);
+    score = Math.min(score, stormPenalty);
+  }
+
+  // 5) Calor seco extremo sem chuva
+  if (hot && volume === 0 && prob === 0) {
+    const hotAdj = smoothLerp(t, 32, 38, score, score * 0.6);
+    score = Math.min(score, hotAdj);
+  }
+
+  return Math.round(clamp(score, 0, 100));
 }
