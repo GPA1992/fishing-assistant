@@ -1,4 +1,4 @@
-import { clamp, smoothLerp } from "../algorithms";
+import { clamp, smoothLerp } from "../../algorithms";
 
 export const humidityScore = (h: number) => {
   if (h >= 90) return 20; // umidade muito alta: ruim

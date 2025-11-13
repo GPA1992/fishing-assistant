@@ -1,4 +1,4 @@
-import { clamp, smoothLerp } from "../algorithms";
+import { clamp, smoothLerp } from "../../algorithms";
 
 /**
  * phase em [0,1]:

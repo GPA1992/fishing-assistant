@@ -1,6 +1,6 @@
-import { calTotalScore } from "../../../common/environment-data";
-import { movingAverageCentered } from "../../../common/environment-data/algorithms";
-import { fishList } from "../../../common/environment-data/types";
+import { calTotalScore } from "@env-data";
+import { movingAverageCentered } from "@env-data/algorithms";
+import { fishList } from "@env-data/types";
 import { sololunarGeneration } from "../../../common/sololunar-generation";
 import { HourlyResponseData } from "../../weather-data-slim/contracts/in/contracts.in.response";
 import { getAllWeatherData } from "../../weather-data-slim/services";

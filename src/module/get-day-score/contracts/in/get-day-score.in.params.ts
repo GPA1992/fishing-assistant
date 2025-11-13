@@ -1,4 +1,4 @@
-import { fishList } from "../../../../common/environment-data/types";
+import { fishList } from "@env-data/types";
 
 export interface ScoreQueryParams {
   latitude: number;

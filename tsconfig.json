@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "sourceMap": true,
-    "ignoreDeprecations": "6.0"
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@env-data": ["src/common/environment-data/index.ts"],
+      "@env-data/*": ["src/common/environment-data/*"]
+    }
   },
   "include": ["src/**/*.ts"]
 }

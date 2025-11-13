@@ -1,5 +1,5 @@
-import { Sololunar } from "../../module/sololunar-periods/domain/sololunar-periods-data";
-import { SolunarPeriodsData } from "./traira/sololunar-calc";
+import { SolunarPeriodsData } from "../traira/scorers/sololunar";
+import { fishList } from "../species";
 
 export type RainContext = {
   volumeMmPerHour: number; // volume total de precipitação (mm/h)
@@ -49,6 +49,14 @@ export interface environmentDataType {
   };
 }
 
+export type SololunarCalc = {
+  computeMoonBonusPoints: (moonIllumination?: number) => number;
+  computeSolunarBonusPoints: (
+    data: SolunarPeriodsData,
+    hourLocalDec: number
+  ) => number;
+};
+
 export type calcScoreFunctions = {
   climaticConditionsCalc: {
     humidityScore: (h: number) => number;
@@ -58,12 +66,7 @@ export type calcScoreFunctions = {
   };
   moonPhaseCalc: { moonPhaseScore: (phase: number) => number };
   rainCalc: { rainScore: (context: RainContext) => number };
-  sololunarCalc: {
-    solunarScores: (input: SolunarInput) => {
-      solunarDailyScore: number;
-      solunarHourlyScore: Record<number, number>;
-    };
-  };
+  sololunarCalc: SololunarCalc;
 };
 
 export type calculateTotalScoreBySpecieType = {
@@ -99,4 +102,4 @@ export type TotalCalcResult = Readonly<{
   hourlyScore: number;
 }>;
 
-export type fishList = "traira";
+export type { fishList };

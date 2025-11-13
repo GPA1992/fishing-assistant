@@ -1,4 +1,4 @@
-import { clamp } from "../algorithms";
+import { clamp } from "../../algorithms";
 
 export type SolunarPeriodsData = {
   // horas decimais locais (ex.: 17.8333 = 17:50)

@@ -1,5 +1,5 @@
-import { clamp, smoothLerp } from "../algorithms";
-import { RainContext } from "../types";
+import { clamp, smoothLerp } from "../../algorithms";
+import { RainContext } from "../../types";
 
 /* export function rainScore(context: RainContext): number {
   const volume = Math.max(0, context.volumeMmPerHour);

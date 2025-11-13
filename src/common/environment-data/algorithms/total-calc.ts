@@ -1,10 +1,10 @@
-import { clamp, smoothLerp } from ".";
+import { clamp, smoothLerp } from "./math";
 import { calcFuncBySpecie } from "..";
+import { fishList, TotalCalcParams, TotalCalcResult } from "../types";
 import {
   computeMoonBonusPoints,
   computeSolunarBonusPoints,
-} from "../traira/sololunar-calc";
-import { fishList, TotalCalcParams, TotalCalcResult } from "../types";
+} from "@env-data/traira/scorers/sololunar";
 
 const WEIGHTS = {
   temperature: 0.32,
