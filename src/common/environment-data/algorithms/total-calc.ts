@@ -10,7 +10,7 @@ const WEIGHTS = {
   temperature: 0.32,
   pressure: 0.24,
   wind: 0.19,
-  rain: 0.2, // mais impacto quando realmente há chuva
+  rain: 0.2,
   humidity: 0.05,
 } as const;
 
@@ -74,6 +74,7 @@ export const calcFinalScore = (
   const moonBonus = computeMoonBonusPoints(
     props.solunarPeriodsData?.moonIllumination
   );
+
   const solunarBonus = props.solunarPeriodsData
     ? computeSolunarBonusPoints(props.solunarPeriodsData, hourDec)
     : 0;
