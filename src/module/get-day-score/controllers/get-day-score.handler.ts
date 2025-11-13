@@ -24,11 +24,11 @@ export const getDayScoreRoute: FastifyPluginAsync = async (fastify) => {
         date.setUTCMonth(parseInt(dto.targetMonth) - 1);
         date.setUTCDate(parseInt(dto.targetDay));
         date.setUTCHours(parseInt(dto.targetHour), 0, 0, 0);
+
         const data = await getScoreData({
           latitude: dto.latitude,
           longitude: dto.longitude,
           datetime: date,
-          timezone: dto.timezone,
           fishList: [dto.fishList as any],
         });
 

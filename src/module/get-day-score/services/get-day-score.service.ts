@@ -1,7 +1,7 @@
 import { calTotalScore } from "../../../common/environment-data";
 import { movingAverageCentered } from "../../../common/environment-data/algorithms";
 import { fishList } from "../../../common/environment-data/types";
-import { getSoloLunarPeriods } from "../../sololunar-periods/application";
+import { sololunarGeneration } from "../../../common/sololunar-generation";
 import { HourlyResponseData } from "../../weather-data-slim/contracts/in/contracts.in.response";
 import { getAllWeatherData } from "../../weather-data-slim/services";
 import { ScoreQueryParams } from "../contracts/in/get-day-score.in.params";
@@ -25,11 +25,18 @@ export function getScoreDayService(): GetScoreData {
       longitude,
     });
 
-    const sololunarData = await getSoloLunarPeriods({
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-      date: datetime,
+    const date = new Date(datetime);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    const sololunarData = sololunarGeneration({
+      lat: Number(latitude),
+      lon: Number(longitude),
+      date: `${year}-${month}-${day}`,
     });
+
+    console.log(sololunarData);
 
     let resultByFish = {} as any;
 
@@ -75,6 +82,7 @@ export function getScoreDayService(): GetScoreData {
       return {
         ...w,
         ...calc,
+        moonPhase: sololunarData.moonPhase,
       };
     });
 

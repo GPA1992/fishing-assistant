@@ -1,3 +1,9 @@
+export type sololunarGenerationParams = {
+  lat: number;
+  lon: number;
+  date: string;
+};
+
 export type Sololunar = {
   sunRise: string;
   sunTransit: string;
@@ -60,10 +66,4 @@ export interface HourlyRating {
   "21": number;
   "22": number;
   "23": number;
-}
-
-export function makeSolunarPeriod(data: Sololunar): Sololunar {
-  return Object.freeze({
-    ...data,
-  });
 }
