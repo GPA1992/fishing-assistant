@@ -1,5 +1,5 @@
-import { calTotalScore } from "@env-data";
-import { movingAverageCentered } from "@env-data/algorithms";
+import { calculateScore } from "@env-data/scriptsV2";
+import { ScoreComputationResult } from "@env-data/scriptsV2/schema/types";
 import { fishList } from "@env-data/types";
 import { sololunarGeneration } from "../../../common/sololunar-generation";
 import { HourlyResponseData } from "../../weather-data-slim/contracts/in/contracts.in.response";
@@ -38,52 +38,46 @@ export function getScoreDayService(): GetScoreData {
       date: `${year}-${month}-${day}`,
     });
 
-    console.log(sololunarData);
-
     let resultByFish = {} as any;
 
-    const { calculateTotalScoreBySpecie } = calTotalScore;
+    const solunarPeriodsData = {
+      major1StartDec: sololunarData.major1StartDec,
+      major1StopDec: sololunarData.major1StopDec,
+      major2StartDec: sololunarData.major2StartDec,
+      major2StopDec: sololunarData.major2StopDec,
+      minor1StartDec: sololunarData.minor1StartDec,
+      minor1StopDec: sololunarData.minor1StopDec,
+      minor2StartDec: sololunarData.minor2StartDec,
+      minor2StopDec: sololunarData.minor2StopDec,
+      moonIllumination: sololunarData.moonIllumination,
+    };
 
-    const calc = weatherDataResult.hourly.map((w, i) => {
-      const hour = new Date(w.time)
-        .getUTCHours()
-        .toString() as keyof (typeof sololunarData)["hourlyRating"];
-      const sololunarScoreFromApi = sololunarData.hourlyRating[hour];
-      const sololunarBonus =
-        (sololunarData.dayRating + sololunarScoreFromApi / 10) / 2;
-
-      const sixHourTemp = movingAverageCentered(
-        weatherDataResult.hourly,
-        i,
-        3,
-        (row) => row.temperature
-      );
-
+    const calc = weatherDataResult.hourly.map((w) => {
       const dt = new Date(w.time);
+      const localHour = dt.getUTCHours();
+      const localHourDec = localHour + dt.getUTCMinutes() / 60;
 
-      const calc = calculateTotalScoreBySpecie(
-        {
+      const scoreByFish = fishList.reduce((acc, specie) => {
+        acc[specie] = calculateScore(specie, {
+          temperature: w.temperature,
           humidity: w.humidity,
           pressure: w.pressure,
-          probability: w.probability,
-          rain: w.rain,
-          time: w.time,
-          total: w.total,
           windSpeed: w.windSpeed,
+          probability: w.probability,
+          total: w.total,
           showers: w.showers,
-          sololunarScore: sololunarBonus,
-          temperature: w.temperature,
-          localHour: dt.getUTCHours(),
-          localHourDec: dt.getUTCHours() + dt.getUTCMinutes() / 60,
+          localHour,
+          localHourDec,
           pressureTrend6h: w.pressureTrend6h,
-          sixHourTemp,
-          solunarPeriodsData: { ...sololunarData },
-        },
-        fishList
-      );
+          solunarPeriodsData,
+          moonIllumination: sololunarData.moonIllumination,
+        });
+        return acc;
+      }, {} as Record<fishList, ScoreComputationResult>);
+
       return {
         ...w,
-        ...calc,
+        ...scoreByFish,
         moonPhase: sololunarData.moonPhase,
       };
     });

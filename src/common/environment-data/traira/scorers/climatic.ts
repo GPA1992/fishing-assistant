@@ -76,9 +76,8 @@ export const temperatureScore = (tempC: number): number => {
 
 // clima/wind.ts
 export const windScore = (w: number): number => {
-  if (w <= 0) return 55;
-  if (w <= 3) return smoothLerp(w, 0, 3, 85, 95); // pico em ~2–3 km/h
-  if (w <= 8) return smoothLerp(w, 3, 8, 95, 80); // começa a dispersar estímulos
+  if (w <= 3) return smoothLerp(w, 0, 3, 100, 90); // pico em ~2–3 km/h
+  if (w <= 8) return smoothLerp(w, 3, 8, 90, 80); // começa a dispersar estímulos
   if (w <= 18) return smoothLerp(w, 8, 18, 80, 60);
   if (w <= 28) return smoothLerp(w, 18, 28, 60, 35);
   if (w <= 40) return smoothLerp(w, 28, 40, 35, 20);

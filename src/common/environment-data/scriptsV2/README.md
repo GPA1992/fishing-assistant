@@ -1,0 +1,57 @@
+# scriptsV2
+
+Nova implementação do motor de score ambiental, pensada para reaproveitar cada função de cálculo entre múltiplas espécies. A arquitetura é declarativa: cada peixe descreve faixas e pesos em objetos de configuração e o motor gera automaticamente os scorers.
+
+## Estrutura
+
+- `core/`: utilitários matemáticos, temporais e de modificadores diurnos.
+- `schema/`: tipos de configuração (faixas, regras de chuva, pesos, bônus).
+- `engine/`: fábricas genéricas (`createRangeScorer`, `createRainScorer`) e o `buildSpeciesCalculator`.
+- `species/`: configurações específicas (ex.: `traira.ts`).
+- `index.ts`: registro de espécies e API pública (`calculateScore`, `registerSpecies`).
+
+## Como adicionar uma espécie
+
+1. **Criar config** em `species/<nome>.ts` exportando um `SpeciesScoreConfig`:
+   ```ts
+   import { SpeciesScoreConfig } from "../schema/types";
+
+   export const tucanareScoreConfig: SpeciesScoreConfig = {
+     id: "tucanare",
+     weights: { temperature: 0.3, pressure: 0.2, wind: 0.2, rain: 0.2, humidity: 0.1 },
+     temperature: { ranges: [...], clamp: { min: 0, max: 100 } },
+     // demais variáveis …
+     rain: { baseRules: [...], modifiers: [...] },
+     diurnal: { amplitudeBase: 0.05, temperatureRanges: [...] },
+     moonBonus: { maxBonus: 2, mode: "center-peaks" },
+     solunarBonus: { majorWeight: 4, minorWeight: 2, maxBonus: 8 },
+   };
+   ```
+2. **Registrar** a espécie em `index.ts` (importar o config e chamar `registerSpecies`).
+3. **Calcular score**:
+   ```ts
+   import { calculateScore } from "@env-data/scriptsV2";
+
+   const result = calculateScore("traira", {
+     temperature: 25,
+     humidity: 55,
+     pressure: 1013,
+     windSpeed: 10,
+     probability: 20,
+     total: 0,
+     showers: 0,
+     localHour: 8,
+     localHourDec: 8.5,
+     pressureTrend6h: -2,
+     solunarPeriodsData: { major1StartDec: 6.5, major1StopDec: 8.5 },
+   });
+   ```
+
+## Principais ideias
+
+- **Faixas reutilizáveis:** `RangeBlockConfig` define pontos de interpolação suave (linear ou smooth-step) que alimentam os scorers de temperatura, umidade, vento etc.
+- **Chuva parametrizada:** `RainRule` descreve condições (volume, probabilidade, temperatura, flags de calor/frio) e ações (`set`, `max`, `min`, `scale`). Basta alterar o array de regras para personalizar comportamentos.
+- **Bonus configuráveis:** `MoonBonusConfig` e `SolunarBonusConfig` determinam pesos máximos e formato das curvas, mantendo o cap configurável por espécie.
+- **Modificador diurno:** `DiurnalModifierConfig` recebe faixas de temperatura → adequação térmica, permitindo ajustar amplitude da curva diária sem reescrever a função.
+
+Com esse formato, futuras espécies compartilham o mesmo motor bastando copiar/ajustar configurações e, se necessário, adicionar regras customizadas.
