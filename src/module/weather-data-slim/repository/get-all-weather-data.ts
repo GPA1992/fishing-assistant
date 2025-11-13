@@ -8,6 +8,8 @@ export function getAllWeatherDataFunc() {
   return async function getAllWeatherData(
     params: WeatherQueryParams
   ): Promise<HourlyResponseData<WeatherData>> {
+    try {
+    } catch (error) {}
     const y = params.datetime.getUTCFullYear();
     const m = String(params.datetime.getUTCMonth() + 1).padStart(2, "0");
     const d = String(params.datetime.getUTCDate()).padStart(2, "0");

@@ -86,6 +86,92 @@ export function getScoreDayService(): GetScoreData {
       };
     });
 
-    return calc;
+    fishList.map((f) => {
+      calc.map((hourly) => {
+        const {
+          time,
+          temperature,
+          humidity,
+          pressure,
+          windSpeed,
+          probability,
+          rain,
+          showers,
+          total,
+          pressureTrend6h,
+        } = hourly;
+        if (!resultByFish[f]) {
+          resultByFish[f] = {
+            hourly: [
+              {
+                time,
+                temperature,
+                humidity,
+                pressure,
+                windSpeed,
+                probability,
+                rain,
+                showers,
+                total,
+                pressureTrend6h,
+                score: hourly[f],
+              },
+            ],
+          };
+        }
+        if (resultByFish[f]) {
+          resultByFish[f].hourly.push({
+            time,
+            temperature,
+            humidity,
+            pressure,
+            windSpeed,
+            probability,
+            rain,
+            showers,
+            total,
+            pressureTrend6h,
+            score: hourly[f],
+          });
+        }
+      });
+      const target = calc.find(
+        (c) => weatherDataResult.targetHour.time === c.time
+      );
+
+      const {
+        time,
+        temperature,
+        humidity,
+        pressure,
+        windSpeed,
+        probability,
+        rain,
+        showers,
+        total,
+        pressureTrend6h,
+      } = target!;
+
+      resultByFish[f] = {
+        ...resultByFish[f],
+        targetHour: [
+          {
+            time,
+            temperature,
+            humidity,
+            pressure,
+            windSpeed,
+            probability,
+            rain,
+            showers,
+            total,
+            pressureTrend6h,
+            score: target![f],
+          },
+        ],
+      };
+    });
+
+    return resultByFish;
   };
 }
