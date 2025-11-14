@@ -137,6 +137,7 @@ export type ScoreComputationResult = {
   breakdown: ScoreBreakdown;
   moonBonus: number;
   solunarBonus: number;
+  moonPhaseBonus: number;
 };
 
 export type SpeciesScoreConfig = {

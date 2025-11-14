@@ -52,6 +52,7 @@ Nova implementação do motor de score ambiental, pensada para reaproveitar cada
 - **Faixas reutilizáveis:** `RangeBlockConfig` define pontos de interpolação suave (linear ou smooth-step) que alimentam os scorers de temperatura, umidade, vento etc.
 - **Chuva parametrizada:** `RainRule` descreve condições (volume, probabilidade, temperatura, flags de calor/frio) e ações (`set`, `max`, `min`, `scale`). Basta alterar o array de regras para personalizar comportamentos.
 - **Bonus configuráveis:** `MoonBonusConfig` e `SolunarBonusConfig` determinam pesos máximos e formato das curvas, mantendo o cap configurável por espécie.
+- **Fase da lua contextualizada:** além do bônus por iluminação, o motor interpreta a fase (cheia, nova, quartos) e aplica reforços em janelas horárias específicas (lua cheia cobre noite e o amanhecer seguinte, lua nova privilegia o amanhecer faminto, quartos reforçam transições), gerando o `moonPhaseBonus`.
 - **Modificador diurno:** `DiurnalModifierConfig` recebe faixas de temperatura → adequação térmica, permitindo ajustar amplitude da curva diária sem reescrever a função.
 
 Com esse formato, futuras espécies compartilham o mesmo motor bastando copiar/ajustar configurações e, se necessário, adicionar regras customizadas.

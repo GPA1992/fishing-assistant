@@ -95,6 +95,7 @@ export function getScoreDayService(): GetScoreData {
           showers,
           total,
           pressureTrend6h,
+          moonPhase,
         } = hourly;
         if (!resultByFish[f]) {
           resultByFish[f] = {
@@ -111,6 +112,7 @@ export function getScoreDayService(): GetScoreData {
                 total,
                 pressureTrend6h,
                 score: hourly[f],
+                moonPhase,
               },
             ],
           };
@@ -128,6 +130,7 @@ export function getScoreDayService(): GetScoreData {
             total,
             pressureTrend6h,
             score: hourly[f],
+            moonPhase,
           });
         }
       });
@@ -146,6 +149,7 @@ export function getScoreDayService(): GetScoreData {
         showers,
         total,
         pressureTrend6h,
+        moonPhase,
       } = target!;
 
       resultByFish[f] = {
@@ -162,6 +166,7 @@ export function getScoreDayService(): GetScoreData {
             showers,
             total,
             pressureTrend6h,
+            moonPhase,
             score: target![f],
           },
         ],

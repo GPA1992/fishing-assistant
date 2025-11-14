@@ -21,6 +21,28 @@ export type SpeciesCalculator = {
   calculate: (input: ScoreComputationInput) => ScoreComputationResult;
 };
 
+const isFiniteNumber = (value: number | undefined): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+
+const inertiaFactor = 0.2;
+
+const computeWaterTemp = (
+  airTemp: number,
+  prevWaterTemp?: number
+): number => {
+  if (!isFiniteNumber(prevWaterTemp)) return airTemp;
+  return prevWaterTemp + inertiaFactor * (airTemp - prevWaterTemp);
+};
+
+const shouldResetWaterState = (
+  previousHour: number | undefined,
+  currentHour: number | undefined
+) => {
+  if (!isFiniteNumber(previousHour) || !isFiniteNumber(currentHour))
+    return false;
+  return currentHour <= previousHour;
+};
+
 const computeMoonBonus = (
   illumination: number | undefined,
   config?: MoonBonusConfig
@@ -40,6 +62,81 @@ const computeMoonBonus = (
   }
 
   return clamp(normalized * config.maxBonus, 0, config.maxBonus);
+};
+
+const computeMoonPhaseWindowWeight = (
+  hour: number,
+  start: number,
+  end: number
+) => {
+  if (start === end) return 1;
+  const span = end - start;
+  if (span <= 0) return 0;
+  const center = start + span / 2;
+  const halfSpan = span / 2;
+  const distance = Math.abs(hour - center);
+  if (distance >= halfSpan) return 0;
+  return 1 - distance / halfSpan;
+};
+
+const computeWrappedWindowWeight = (
+  hour: number,
+  start: number,
+  end: number
+) => {
+  if (start <= end) {
+    return computeMoonPhaseWindowWeight(hour, start, end);
+  }
+  return Math.max(
+    computeMoonPhaseWindowWeight(hour, start, 24),
+    computeMoonPhaseWindowWeight(hour, 0, end)
+  );
+};
+
+const normalizeHourDec = (value: number | undefined) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return undefined;
+  }
+  const normalized = value % 24;
+  return normalized < 0 ? normalized + 24 : normalized;
+};
+
+const computeMoonPhaseBonus = (
+  illumination: number | undefined,
+  hourDec: number | undefined
+): number => {
+  if (typeof illumination !== "number") return 0;
+  const hour = normalizeHourDec(hourDec);
+  if (hour === undefined) return 0;
+
+  const clampedIllum = clamp(illumination, 0, 1);
+  const phase =
+    clampedIllum <= 0.25
+      ? "new"
+      : clampedIllum >= 0.75
+      ? "full"
+      : "quarter";
+
+  switch (phase) {
+    case "full": {
+      const nightEmphasis = Math.max(
+        computeWrappedWindowWeight(hour, 20, 24),
+        computeWrappedWindowWeight(hour, 0, 4.5)
+      );
+      const morningCarry = computeWrappedWindowWeight(hour, 5, 10);
+      return Math.max(nightEmphasis * 1.5, morningCarry * 1);
+    }
+    case "new": {
+      const dawnEmphasis = computeWrappedWindowWeight(hour, 4.5, 9);
+      return dawnEmphasis * 1.5;
+    }
+    case "quarter":
+    default: {
+      const dawn = computeWrappedWindowWeight(hour, 5, 9);
+      const dusk = computeWrappedWindowWeight(hour, 16, 20.5);
+      return Math.max(dawn, dusk) * 1.2;
+    }
+  }
 };
 
 const computeSolunarBonus = (
@@ -85,11 +182,27 @@ export const buildSpeciesCalculator = (
   const bonusCap = config.bonusCap ?? 8;
   const precision = config.precision ?? 3;
   const precisionFactor = Math.pow(10, precision);
+  let prevWaterTemp: number | undefined;
+  let prevHour: number | undefined;
 
   return {
     id: config.id,
     calculate: (input: ScoreComputationInput) => {
-      const tempRaw = temperatureScore(input.temperature);
+      const currentHour =
+        typeof input.localHour === "number" ? input.localHour : undefined;
+
+      if (shouldResetWaterState(prevHour, currentHour)) {
+        prevWaterTemp = undefined;
+      }
+
+      const airTemp = Number.isFinite(input.temperature)
+        ? input.temperature
+        : prevWaterTemp ?? input.temperature;
+      const waterTemp = computeWaterTemp(airTemp, prevWaterTemp);
+      prevWaterTemp = waterTemp;
+      prevHour = currentHour;
+
+      const tempRaw = temperatureScore(waterTemp);
       const humidityRaw = humidityScore(input.humidity);
       const pressureRaw = pressureScore(
         input.pressure,
@@ -113,7 +226,7 @@ export const buildSpeciesCalculator = (
         rain: rainRaw * config.weights.rain,
       };
 
-      const diurnalFactor = diurnal(input.localHour ?? 12, input.temperature);
+      const diurnalFactor = diurnal(input.localHour ?? 12, waterTemp);
       const activePart =
         activeVars.reduce((acc, key) => acc + breakdown[key], 0) * diurnalFactor;
       const passivePart = passiveVars.reduce(
@@ -133,7 +246,16 @@ export const buildSpeciesCalculator = (
         input.localHourDec,
         config.solunarBonus
       );
-      const combinedBonus = Math.min(moonBonus + solunarBonus, bonusCap);
+      const moonPhaseBonus = computeMoonPhaseBonus(
+        moonIllum,
+        typeof input.localHourDec === "number"
+          ? input.localHourDec
+          : input.localHour
+      );
+      const combinedBonus = Math.min(
+        moonBonus + solunarBonus + moonPhaseBonus,
+        bonusCap
+      );
 
       hourlyScore = clamp(hourlyScore + combinedBonus, 0, 100);
       hourlyScore = Math.round(hourlyScore * precisionFactor) / precisionFactor;
@@ -143,6 +265,7 @@ export const buildSpeciesCalculator = (
         breakdown,
         moonBonus,
         solunarBonus,
+        moonPhaseBonus,
       };
     },
   };
