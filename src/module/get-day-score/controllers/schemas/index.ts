@@ -7,8 +7,7 @@ export const ScoreDataQuerySchema = Type.Object(
     longitude: Type.Number(),
     targetDay: Type.String(),
     targetMonth: Type.String(),
-    targetHour: Type.String(),
-    fishList: Type.String(),
+    fishList: Type.Array(Type.String()),
   },
   { additionalProperties: false }
 );

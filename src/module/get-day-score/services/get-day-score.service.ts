@@ -134,42 +134,12 @@ export function getScoreDayService(): GetScoreData {
           });
         }
       });
-      const target = calc.find(
+      /*       const target = calc.find(
         (c) => weatherDataResult.targetHour.time === c.time
-      );
-
-      const {
-        time,
-        temperature,
-        humidity,
-        pressure,
-        windSpeed,
-        probability,
-        rain,
-        showers,
-        total,
-        pressureTrend6h,
-        moonPhase,
-      } = target!;
+      ); */
 
       resultByFish[f] = {
         ...resultByFish[f],
-        targetHour: [
-          {
-            time,
-            temperature,
-            humidity,
-            pressure,
-            windSpeed,
-            probability,
-            rain,
-            showers,
-            total,
-            pressureTrend6h,
-            moonPhase,
-            score: target![f],
-          },
-        ],
       };
     });
 

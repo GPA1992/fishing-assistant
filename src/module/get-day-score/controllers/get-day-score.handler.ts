@@ -23,7 +23,6 @@ export const getDayScoreRoute: FastifyPluginAsync = async (fastify) => {
         date.setUTCFullYear(date.getUTCFullYear());
         date.setUTCMonth(parseInt(dto.targetMonth) - 1);
         date.setUTCDate(parseInt(dto.targetDay));
-        date.setUTCHours(parseInt(dto.targetHour), 0, 0, 0);
 
         const data = await getScoreData({
           latitude: dto.latitude,

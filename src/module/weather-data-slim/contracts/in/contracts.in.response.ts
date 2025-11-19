@@ -1,13 +1,13 @@
 export interface HourlyResponseData<T> {
   hourly: T[];
-  targetHour: T;
+  /*   targetHour: T; */
 }
 
 export interface HourlyResponseDataWhitScore<T> {
   hourly: T[];
 
   score: number;
-  targetHour: T;
+  /*   targetHour: T; */
 }
 
 export interface DailyResponseData<T> {
