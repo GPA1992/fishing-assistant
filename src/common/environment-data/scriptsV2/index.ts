@@ -6,6 +6,7 @@ import {
 } from "./schema/types";
 import { buildSpeciesCalculator, SpeciesCalculator } from "./engine/calculator";
 import { trairaScoreConfig } from "./species/traira";
+import { tucanareScoreConfig } from "./species/tucunare";
 
 const registry = new Map<SpeciesId, SpeciesCalculator>();
 
@@ -33,8 +34,9 @@ export const getCalculator = (speciesId: SpeciesId) => registry.get(speciesId);
 
 const bootstrapSpecies = () => {
   registerInternal(trairaScoreConfig);
+  registerInternal(tucanareScoreConfig);
 };
 
 bootstrapSpecies();
 
-export { trairaScoreConfig };
+export { trairaScoreConfig, tucanareScoreConfig };

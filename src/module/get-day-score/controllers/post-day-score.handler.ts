@@ -3,22 +3,22 @@ import { FastifyPluginAsync } from "fastify";
 
 import { withErrorBoundary } from "../../../shared/libs/error-handler";
 import { AppResponse, HttpStatus } from "../../../shared/types";
-import { ScoreDataQuery, ScoreDataQuerySchema } from "./schemas";
+import { ScoreDataBody, ScoreDataBodySchema } from "./schemas";
 import { getScoreData } from "../services";
 
-export const getDayScoreRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get(
-    "/get-score",
+export const postDayScoreRoute: FastifyPluginAsync = async (fastify) => {
+  fastify.post(
+    "/post-score",
     {
       schema: {
         tags: ["Score Diário"],
         summary: "Obtém o score diário com base em dados climáticos.",
-        querystring: ScoreDataQuerySchema,
+        body: ScoreDataBodySchema,
       },
     },
     async (request, reply) => {
       const result = await withErrorBoundary(async () => {
-        const dto = request.query as ScoreDataQuery;
+        const dto = request.body as ScoreDataBody;
         const date = new Date();
         date.setUTCFullYear(date.getUTCFullYear());
         date.setUTCMonth(parseInt(dto.targetMonth) - 1);
@@ -28,7 +28,7 @@ export const getDayScoreRoute: FastifyPluginAsync = async (fastify) => {
           latitude: dto.latitude,
           longitude: dto.longitude,
           datetime: date,
-          fishList: [dto.fishList as any],
+          fishList: dto.fishList as any,
         });
 
         const response: AppResponse = {

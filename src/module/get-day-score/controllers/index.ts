@@ -1,10 +1,10 @@
 import { FastifyPluginAsync } from "fastify";
-import { getDayScoreRoute } from "./get-day-score.handler";
+import { postDayScoreRoute } from "./post-day-score.handler";
 
 export const getScore: FastifyPluginAsync = async (fastify) => {
   fastify.register(
     async (r) => {
-      await r.register(getDayScoreRoute);
+      await r.register(postDayScoreRoute);
     },
     { prefix: "/score" }
   );

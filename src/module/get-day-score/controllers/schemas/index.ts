@@ -1,7 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 import { DataResponseSchema } from "../../../../shared/schemas";
 
-export const ScoreDataQuerySchema = Type.Object(
+export const ScoreDataBodySchema = Type.Object(
   {
     latitude: Type.Number(),
     longitude: Type.Number(),
@@ -11,7 +11,7 @@ export const ScoreDataQuerySchema = Type.Object(
   },
   { additionalProperties: false }
 );
-export type ScoreDataQuery = Static<typeof ScoreDataQuerySchema>;
+export type ScoreDataBody = Static<typeof ScoreDataBodySchema>;
 
 export const WeatherDataSchema = Type.Object(
   {

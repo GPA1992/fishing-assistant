@@ -21,6 +21,8 @@ export function getScoreDayService(): GetScoreData {
   }: ScoreQueryParams): Promise<
     Record<fishList, HourlyResponseData<DayScoreByFish>>
   > {
+    console.log(fishList);
+
     const weatherDataResult = await getAllWeatherData({
       datetime,
       latitude,
