@@ -13,6 +13,32 @@ export const ScoreDataBodySchema = Type.Object(
 );
 export type ScoreDataBody = Static<typeof ScoreDataBodySchema>;
 
+const SpeciesIdSchema = Type.Union([
+  Type.Literal("traira"),
+  Type.Literal("tucunare"),
+]);
+
+export const ScoreTestBodySchema = Type.Object(
+  {
+    speciesId: Type.Optional(SpeciesIdSchema),
+    time: Type.String({ format: "date-time" }),
+    temperature: Type.Number(),
+    humidity: Type.Number(),
+    pressure: Type.Number(),
+    windSpeed: Type.Number(),
+    probability: Type.Number(),
+    total: Type.Optional(Type.Number()),
+    rain: Type.Optional(Type.Number()),
+    showers: Type.Number(),
+    pressureTrend6h: Type.Optional(Type.Number()),
+    moonIllumination: Type.Optional(
+      Type.Number({ minimum: 0, maximum: 1 })
+    ),
+  },
+  { additionalProperties: false }
+);
+export type ScoreTestBody = Static<typeof ScoreTestBodySchema>;
+
 export const WeatherDataSchema = Type.Object(
   {
     time: Type.String(),

@@ -1,4 +1,5 @@
-import { calculateScore } from "@env-data/scriptsV2";
+import { createCalculatorSession } from "@env-data/scriptsV2";
+import { SpeciesCalculator } from "@env-data/scriptsV2/engine/calculator";
 import { ScoreComputationResult } from "@env-data/scriptsV2/schema/types";
 import { fishList } from "@env-data/types";
 import { sololunarGeneration } from "../../../common/sololunar-generation";
@@ -54,13 +55,22 @@ export function getScoreDayService(): GetScoreData {
       moonIllumination: sololunarData.moonIllumination,
     };
 
+    const calculators = fishList.reduce(
+      (acc, specie) => {
+        acc[specie] = createCalculatorSession(specie);
+        return acc;
+      },
+      {} as Record<fishList, SpeciesCalculator>
+    );
+
     const calc = weatherDataResult.hourly.map((w) => {
       const dt = new Date(w.time);
       const localHour = dt.getUTCHours();
       const localHourDec = localHour + dt.getUTCMinutes() / 60;
 
       const scoreByFish = fishList.reduce((acc, specie) => {
-        acc[specie] = calculateScore(specie, {
+        const calculator = calculators[specie];
+        acc[specie] = calculator.calculate({
           temperature: w.temperature,
           humidity: w.humidity,
           pressure: w.pressure,
