@@ -3,10 +3,10 @@ import { RainRule, SpeciesScoreConfig } from "../schema/types";
 
 const temperatureRanges: RangeBlockConfig[] = [
   { min: -20, max: 8, scoreStart: 0, scoreEnd: 0, curve: "linear" },
-  { min: 8, max: 12, scoreStart: 0, scoreEnd: 10 },
-  { min: 12, max: 15, scoreStart: 10, scoreEnd: 25 },
-  { min: 15, max: 18, scoreStart: 25, scoreEnd: 40 },
-  { min: 18, max: 22, scoreStart: 40, scoreEnd: 70 },
+  { min: 8, max: 12, scoreStart: 20, scoreEnd: 25 },
+  { min: 12, max: 15, scoreStart: 25, scoreEnd: 40 },
+  { min: 15, max: 18, scoreStart: 40, scoreEnd: 60 },
+  { min: 18, max: 22, scoreStart: 60, scoreEnd: 70 },
   { min: 22, max: 26, scoreStart: 70, scoreEnd: 100 },
   { min: 26, max: 30, scoreStart: 100, scoreEnd: 80 },
   { min: 30, max: 33, scoreStart: 80, scoreEnd: 20 },
