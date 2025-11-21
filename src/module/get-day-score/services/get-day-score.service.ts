@@ -30,9 +30,9 @@ export function getScoreDayService(): GetScoreData {
     });
 
     const date = new Date(datetime);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");
 
     const sololunarData = sololunarGeneration({
       lat: Number(latitude),
@@ -84,8 +84,10 @@ export function getScoreDayService(): GetScoreData {
       };
     });
 
-    fishList.map((f) => {
-      calc.map((hourly) => {
+    fishList.forEach((f) => {
+      resultByFish[f] = { hourly: [] };
+
+      calc.forEach((hourly) => {
         const {
           time,
           temperature,
@@ -99,50 +101,22 @@ export function getScoreDayService(): GetScoreData {
           pressureTrend6h,
           moonPhase,
         } = hourly;
-        if (!resultByFish[f]) {
-          resultByFish[f] = {
-            hourly: [
-              {
-                time,
-                temperature,
-                humidity,
-                pressure,
-                windSpeed,
-                probability,
-                rain,
-                showers,
-                total,
-                pressureTrend6h,
-                score: hourly[f],
-                moonPhase,
-              },
-            ],
-          };
-        }
-        if (resultByFish[f]) {
-          resultByFish[f].hourly.push({
-            time,
-            temperature,
-            humidity,
-            pressure,
-            windSpeed,
-            probability,
-            rain,
-            showers,
-            total,
-            pressureTrend6h,
-            score: hourly[f],
-            moonPhase,
-          });
-        }
-      });
-      /*       const target = calc.find(
-        (c) => weatherDataResult.targetHour.time === c.time
-      ); */
 
-      resultByFish[f] = {
-        ...resultByFish[f],
-      };
+        resultByFish[f].hourly.push({
+          time,
+          temperature,
+          humidity,
+          pressure,
+          windSpeed,
+          probability,
+          rain,
+          showers,
+          total,
+          pressureTrend6h,
+          score: hourly[f],
+          moonPhase,
+        });
+      });
     });
 
     return resultByFish;
