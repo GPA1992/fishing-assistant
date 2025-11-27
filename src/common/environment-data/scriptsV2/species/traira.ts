@@ -1,5 +1,6 @@
-import { RangeBlockConfig } from "../core/range";
-import { RainRule, SpeciesScoreConfig } from "../schema/types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { RangeBlockConfig } from "../core/range";
+import type { RainRule, SpeciesScoreConfig } from "../schema/types";
 
 const temperatureRanges: RangeBlockConfig[] = [
   { min: -20, max: 8, scoreStart: 0, scoreEnd: 0, curve: "linear" },
@@ -46,7 +47,7 @@ const windRanges: RangeBlockConfig[] = [
   { min: 40, max: 80, scoreStart: 15, scoreEnd: 15 },
 ];
 
-const rainRules: { base: RainRule[]; modifiers: any } = {
+const rainRules: { base: RainRule[]; modifiers: RainRule[] } = {
   base: [
     {
       name: "totally-dry",
@@ -256,16 +257,8 @@ export const trairaScoreConfig: SpeciesScoreConfig = {
     clamp: { min: 0, max: 100 },
   },
   diurnal: {
-    amplitudeBase: 0.05,
-    temperatureRanges: [
-      { min: -10, max: 18, scoreStart: 0.3, scoreEnd: 0.3 },
-      { min: 18, max: 22, scoreStart: 0.3, scoreEnd: 0.7 },
-      { min: 22, max: 26, scoreStart: 0.7, scoreEnd: 1 },
-      { min: 26, max: 30, scoreStart: 1, scoreEnd: 0.7 },
-      { min: 30, max: 34, scoreStart: 0.7, scoreEnd: 0.4 },
-      { min: 34, max: 50, scoreStart: 0.4, scoreEnd: 0.3 },
-    ],
-    fallbackSuitability: 0.7,
+    maxBonus: 10,
+    clamp: { min: 0, max: 10 },
   },
   moonBonus: {
     maxBonus: 2,

@@ -21,8 +21,8 @@ Nova implementação do motor de score ambiental, pensada para reaproveitar cada
      weights: { temperature: 0.3, pressure: 0.2, wind: 0.2, rain: 0.2, humidity: 0.1 },
      temperature: { ranges: [...], clamp: { min: 0, max: 100 } },
      // demais variáveis …
-     rain: { baseRules: [...], modifiers: [...] },
-     diurnal: { amplitudeBase: 0.05, temperatureRanges: [...] },
+    rain: { baseRules: [...], modifiers: [...] },
+    diurnal: { maxBonus: 10 },
      moonBonus: { maxBonus: 2, mode: "center-peaks" },
      solunarBonus: { majorWeight: 4, minorWeight: 2, maxBonus: 8 },
    };
@@ -53,6 +53,6 @@ Nova implementação do motor de score ambiental, pensada para reaproveitar cada
 - **Chuva parametrizada:** `RainRule` descreve condições (volume, probabilidade, temperatura, flags de calor/frio) e ações (`set`, `max`, `min`, `scale`). Basta alterar o array de regras para personalizar comportamentos.
 - **Bonus configuráveis:** `MoonBonusConfig` e `SolunarBonusConfig` determinam pesos máximos e formato das curvas, mantendo o cap configurável por espécie.
 - **Fase da lua contextualizada:** além do bônus por iluminação, o motor interpreta a fase (cheia, nova, quartos) e aplica reforços em janelas horárias específicas (lua cheia cobre noite e o amanhecer seguinte, lua nova privilegia o amanhecer faminto, quartos reforçam transições), gerando o `moonPhaseBonus`.
-- **Modificador diurno:** `DiurnalModifierConfig` recebe faixas de temperatura → adequação térmica, permitindo ajustar amplitude da curva diária sem reescrever a função.
+- **Modificador diurno:** `DiurnalModifierConfig` aceita janelas de horário com pico triangular, liberando um bônus (0 → pico → 0) para cada janela configurada. Você pode injetar as janelas ao criar a sessão com `createCalculatorSession("traira", [{ startHour: 7, endHour: 10, peakBonus: 10 }])`.
 
 Com esse formato, futuras espécies compartilham o mesmo motor bastando copiar/ajustar configurações e, se necessário, adicionar regras customizadas.

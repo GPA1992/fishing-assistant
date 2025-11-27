@@ -100,6 +100,8 @@ export type SolunarPeriodsInput = {
   minor1StopDec?: number;
   minor2StartDec?: number;
   minor2StopDec?: number;
+  sunRiseDec?: number;
+  sunSetDec?: number;
   moonIllumination?: number;
 };
 

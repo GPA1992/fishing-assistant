@@ -76,10 +76,26 @@ export function triangularPeakAtCenter(
   ) {
     return 0;
   }
-  if (stopDec <= startDec) return 0;
-  const mid = (startDec + stopDec) / 2;
-  const half = (stopDec - startDec) / 2;
-  const dist = Math.abs(hourLocalDec - mid);
+  const normalize = (v: number) => ((v % 24) + 24) % 24;
+  const h = normalize(hourLocalDec);
+  const start = normalize(startDec);
+  const stop = normalize(stopDec);
+
+  if (start === stop) return 0;
+
+  if (stop <= start) {
+    const stopWrapped = stop + 24;
+    const hourWrapped = h < start ? h + 24 : h;
+    const mid = (start + stopWrapped) / 2;
+    const half = (stopWrapped - start) / 2;
+    const dist = Math.abs(hourWrapped - mid);
+    const x = clamp(1 - dist / half, 0, 1);
+    return x;
+  }
+
+  const mid = (start + stop) / 2;
+  const half = (stop - start) / 2;
+  const dist = Math.abs(h - mid);
   const x = clamp(1 - dist / half, 0, 1);
   return x;
 }

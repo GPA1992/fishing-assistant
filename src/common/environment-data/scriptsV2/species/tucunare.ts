@@ -1,5 +1,5 @@
-import { RangeBlockConfig } from "../core/range";
-import { RainRule, SpeciesScoreConfig } from "../schema/types";
+import type { RangeBlockConfig } from "../core/range";
+import type { RainRule, SpeciesScoreConfig } from "../schema/types";
 
 const temperatureRanges: RangeBlockConfig[] = [
   { min: -20, max: 18, scoreStart: 0, scoreEnd: 0, curve: "linear" },
@@ -258,17 +258,8 @@ export const tucanareScoreConfig: SpeciesScoreConfig = {
     clamp: { min: 0, max: 100 },
   },
   diurnal: {
-    amplitudeBase: 0.05,
-    temperatureRanges: [
-      { min: -10, max: 20, scoreStart: 0.25, scoreEnd: 0.25 },
-      { min: 20, max: 24, scoreStart: 0.25, scoreEnd: 0.6 },
-      { min: 24, max: 26, scoreStart: 0.6, scoreEnd: 0.85 },
-      { min: 26, max: 30, scoreStart: 0.85, scoreEnd: 1 },
-      { min: 30, max: 32, scoreStart: 1, scoreEnd: 0.75 },
-      { min: 32, max: 36, scoreStart: 0.75, scoreEnd: 0.4 },
-      { min: 36, max: 50, scoreStart: 0.4, scoreEnd: 0.25 },
-    ],
-    fallbackSuitability: 0.7,
+    maxBonus: 10,
+    clamp: { min: 0, max: 10 },
   },
   moonBonus: {
     maxBonus: 2,

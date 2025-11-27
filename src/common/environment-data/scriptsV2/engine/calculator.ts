@@ -1,7 +1,7 @@
 import { clamp } from "../core/math";
 import { buildDiurnalModifier } from "../core/modifiers";
 import { triangularPeakAtCenter } from "../core/temporal";
-import {
+import type {
   ScoreComputationInput,
   ScoreComputationResult,
   ScoreBreakdown,
@@ -26,10 +26,7 @@ const isFiniteNumber = (value: number | undefined): value is number =>
 
 const inertiaFactor = 0.2;
 
-const computeWaterTemp = (
-  airTemp: number,
-  prevWaterTemp?: number
-): number => {
+const computeWaterTemp = (airTemp: number, prevWaterTemp?: number): number => {
   if (!isFiniteNumber(prevWaterTemp)) return airTemp;
   return prevWaterTemp + inertiaFactor * (airTemp - prevWaterTemp);
 };
@@ -39,8 +36,8 @@ const shouldResetWaterState = (
   currentHour: number | undefined
 ) => {
   if (!isFiniteNumber(previousHour) || !isFiniteNumber(currentHour))
-    return false;
-  return currentHour <= previousHour;
+    return true;
+  return currentHour < previousHour;
 };
 
 const computeMoonBonus = (
@@ -111,11 +108,7 @@ const computeMoonPhaseBonus = (
 
   const clampedIllum = clamp(illumination, 0, 1);
   const phase =
-    clampedIllum <= 0.25
-      ? "new"
-      : clampedIllum >= 0.75
-      ? "full"
-      : "quarter";
+    clampedIllum <= 0.25 ? "new" : clampedIllum >= 0.75 ? "full" : "quarter";
 
   switch (phase) {
     case "full": {
@@ -159,8 +152,7 @@ const computeSolunarBonus = (
 
   const majorSum = majors.reduce((acc, val) => acc + val, 0);
   const minorSum = minors.reduce((acc, val) => acc + val, 0);
-  const bonus =
-    majorSum * config.majorWeight + minorSum * config.minorWeight;
+  const bonus = majorSum * config.majorWeight + minorSum * config.minorWeight;
   return clamp(bonus, 0, config.maxBonus);
 };
 
@@ -173,6 +165,7 @@ export const buildSpeciesCalculator = (
   const windScore = createRangeScorer(config.wind);
   const rainScore = createRainScorer(config.rain);
   const diurnal = buildDiurnalModifier(config.diurnal);
+
   const activeVars = config.activeVariables ?? ["temperature", "wind", "rain"];
   const passiveVars = config.passiveVariables ?? ["humidity", "pressure"];
   const sumWeights = Object.values(config.weights).reduce(
@@ -188,8 +181,12 @@ export const buildSpeciesCalculator = (
   return {
     id: config.id,
     calculate: (input: ScoreComputationInput) => {
-      const currentHour =
-        typeof input.localHour === "number" ? input.localHour : undefined;
+      const hourForDiurnal = isFiniteNumber(input.localHourDec)
+        ? input.localHourDec
+        : input.localHour;
+      const currentHour = isFiniteNumber(hourForDiurnal)
+        ? hourForDiurnal
+        : undefined;
 
       if (shouldResetWaterState(prevHour, currentHour)) {
         prevWaterTemp = undefined;
@@ -204,10 +201,7 @@ export const buildSpeciesCalculator = (
 
       const tempRaw = temperatureScore(waterTemp);
       const humidityRaw = humidityScore(input.humidity);
-      const pressureRaw = pressureScore(
-        input.pressure,
-        input.pressureTrend6h
-      );
+      const pressureRaw = pressureScore(input.pressure, input.pressureTrend6h);
       const windRaw = windScore(input.windSpeed);
       const rainRaw = rainScore({
         volume: Math.max(0, input.total),
@@ -226,14 +220,27 @@ export const buildSpeciesCalculator = (
         rain: rainRaw * config.weights.rain,
       };
 
-      const diurnalFactor = diurnal(input.localHour ?? 12, waterTemp);
-      const activePart =
-        activeVars.reduce((acc, key) => acc + breakdown[key], 0) * diurnalFactor;
+      const diurnalBonus = diurnal(hourForDiurnal ?? 12);
+
+      console.log({ hora: hourForDiurnal, bonus: diurnalBonus });
+
+      const activePart = activeVars.reduce(
+        (acc, key) => acc + breakdown[key],
+        0
+      );
       const passivePart = passiveVars.reduce(
         (acc, key) => acc + breakdown[key],
         0
       );
-      let hourlyScore = (activePart + passivePart) / sumWeights;
+      const usedWeightSum = Array.from(
+        new Set([...activeVars, ...passiveVars])
+      ).reduce(
+        (acc, key) =>
+          acc + ((config.weights as Record<string, number>)[key] ?? 0),
+        0
+      );
+      const divisor = usedWeightSum > 0 ? usedWeightSum : sumWeights;
+      let hourlyScore = (activePart + passivePart) / divisor + diurnalBonus;
 
       const moonIllum =
         typeof input.moonIllumination === "number"
@@ -243,7 +250,7 @@ export const buildSpeciesCalculator = (
       const moonBonus = computeMoonBonus(moonIllum, config.moonBonus);
       const solunarBonus = computeSolunarBonus(
         input.solunarPeriodsData,
-        input.localHourDec,
+        hourForDiurnal,
         config.solunarBonus
       );
       const moonPhaseBonus = computeMoonPhaseBonus(

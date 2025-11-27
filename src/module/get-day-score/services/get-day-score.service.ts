@@ -3,10 +3,13 @@ import { SpeciesCalculator } from "@env-data/scriptsV2/engine/calculator";
 import { ScoreComputationResult } from "@env-data/scriptsV2/schema/types";
 import { fishList } from "@env-data/types";
 import { sololunarGeneration } from "../../../common/sololunar-generation";
+import { DateTime } from "luxon";
+import tzLookup from "tz-lookup";
 import { HourlyResponseData } from "../../weather-data-slim/contracts/in/contracts.in.response";
 import { getAllWeatherData } from "../../weather-data-slim/services";
 import { ScoreQueryParams } from "../contracts/in/get-day-score.in.params";
 import { HourlyScore } from "../domain/day-score-metrics.entity";
+import { buildSunWindows } from "@env-data/scriptsV2/core/modifiers";
 
 export type DayScoreByFish = Readonly<Record<fishList, HourlyScore>>;
 type GetScoreData = (
@@ -22,8 +25,6 @@ export function getScoreDayService(): GetScoreData {
   }: ScoreQueryParams): Promise<
     Record<fishList, HourlyResponseData<DayScoreByFish>>
   > {
-    console.log(fishList);
-
     const weatherDataResult = await getAllWeatherData({
       datetime,
       latitude,
@@ -40,6 +41,9 @@ export function getScoreDayService(): GetScoreData {
       lon: Number(longitude),
       date: `${year}-${month}-${day}`,
     });
+    const timezone = tzLookup(Number(latitude), Number(longitude));
+
+    const diurnalWindows = buildSunWindows(sololunarData);
 
     let resultByFish = {} as any;
 
@@ -55,18 +59,16 @@ export function getScoreDayService(): GetScoreData {
       moonIllumination: sololunarData.moonIllumination,
     };
 
-    const calculators = fishList.reduce(
-      (acc, specie) => {
-        acc[specie] = createCalculatorSession(specie);
-        return acc;
-      },
-      {} as Record<fishList, SpeciesCalculator>
-    );
+    const calculators = fishList.reduce((acc, specie) => {
+      acc[specie] = createCalculatorSession(specie, diurnalWindows);
+      return acc;
+    }, {} as Record<fishList, SpeciesCalculator>);
 
     const calc = weatherDataResult.hourly.map((w) => {
-      const dt = new Date(w.time);
-      const localHour = dt.getUTCHours();
-      const localHourDec = localHour + dt.getUTCMinutes() / 60;
+      const dtUtc = DateTime.fromISO(w.time, { zone: "utc" });
+      const dtLocal = dtUtc.setZone(timezone);
+      const localHour = dtLocal.hour;
+      const localHourDec = localHour + dtLocal.minute / 60;
 
       const scoreByFish = fishList.reduce((acc, specie) => {
         const calculator = calculators[specie];
@@ -128,6 +130,7 @@ export function getScoreDayService(): GetScoreData {
         });
       });
     });
+    console.log(JSON.stringify(resultByFish.traira));
 
     return resultByFish;
   };

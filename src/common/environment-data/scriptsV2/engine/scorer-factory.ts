@@ -1,6 +1,6 @@
 import { clamp } from "../core/math";
 import { evaluateRangeBlocks } from "../core/range";
-import {
+import type {
   NumericValueSource,
   RainConditionDescriptor,
   RainContextInput,
@@ -57,8 +57,7 @@ export const createTrendAdjustedScorer = (
     if (trend && typeof trendDelta === "number") {
       if (trend.fall) {
         const fallMagnitude = clamp(-trendDelta, 0, trend.fall.limit);
-        const bonus =
-          (fallMagnitude / trend.fall.limit) * trend.fall.maxBonus;
+        const bonus = (fallMagnitude / trend.fall.limit) * trend.fall.maxBonus;
         base += bonus;
       }
       if (trend.rise) {
