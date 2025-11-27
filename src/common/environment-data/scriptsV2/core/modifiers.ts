@@ -98,6 +98,7 @@ export const buildDiurnalModifier = (
         Math.max(acc, computeTriangularBonus(h, window, maxBonus)),
       fallbackBonus
     );
+
     return clamp(bonus, clampBounds.min, clampBounds.max);
   };
 };

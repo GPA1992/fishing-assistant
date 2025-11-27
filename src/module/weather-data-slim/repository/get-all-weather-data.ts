@@ -1,4 +1,6 @@
 import { fetchWeatherApi } from "openmeteo";
+import { DateTime } from "luxon";
+import tzLookup from "tz-lookup";
 import { makeWeatherData, WeatherData } from "../domain/weather-data.entity";
 import { WeatherQueryParams } from "../contracts/in/contracts.in.params";
 import { HourlyResponseData } from "../contracts/in/contracts.in.response";
@@ -22,9 +24,12 @@ export function getAllWeatherDataFunc() {
       )
     ); */
 
+    const timezone = tzLookup(params.latitude, params.longitude);
+
     const requestParams = {
       latitude: params.latitude,
       longitude: params.longitude,
+      timezone,
       start_date: `${y}-${m}-${d}`,
       end_date: `${y}-${m}-${d}`,
       hourly: [
@@ -45,6 +50,7 @@ export function getAllWeatherDataFunc() {
 
     const response = responses[0];
     const hourly = response.hourly();
+    const utcOffsetSeconds = response.utcOffsetSeconds() ?? 0;
 
     if (!hourly) {
       throw new Error("Dados meteorológicos não disponíveis");
@@ -54,9 +60,14 @@ export function getAllWeatherDataFunc() {
     const timeEnd = Number(hourly.timeEnd());
     const interval = hourly.interval();
 
-    // timestamps em UTC (sem aplicar utcOffsetSeconds)
+    // timestamps convertidos para a timezone local
     const times = Array.from({ length: (timeEnd - timeStart) / interval }).map(
-      (_, i) => new Date((timeStart + i * interval) * 1000).toISOString()
+      (_, i) =>
+        DateTime.fromSeconds(timeStart + i * interval + utcOffsetSeconds, {
+          zone: "utc",
+        })
+          .setZone(timezone)
+          .toISO({ suppressMilliseconds: true })
     );
 
     const temperature = hourly.variables(0)?.valuesArray() ?? [];
@@ -99,6 +110,8 @@ export function getAllWeatherDataFunc() {
     return {
       hourly: hourlyData,
       targetHour: hourlyData[index],
+      timezone,
+      utcOffsetSeconds,
     };
   };
 }

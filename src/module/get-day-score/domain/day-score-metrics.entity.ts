@@ -11,6 +11,7 @@ export type HourlyScore = Readonly<{
     total: number;
     rainScore: number;
   };
+  hourBonus: number;
   hourlyScore: number;
 }>;
 
@@ -27,6 +28,7 @@ export function MakeDayScoreData(props: {
     total: number;
     rainScore: number;
   };
+  hourBonus: number;
   hourlyScore: number;
 }): HourlyScore {
   return Object.freeze({ ...props });

@@ -1,6 +1,8 @@
 export interface HourlyResponseData<T> {
   hourly: T[];
   /*   targetHour: T; */
+  timezone?: string;
+  utcOffsetSeconds?: number;
 }
 
 export interface HourlyResponseDataWhitScore<T> {

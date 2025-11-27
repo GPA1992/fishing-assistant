@@ -211,6 +211,7 @@ export const buildSpeciesCalculator = (
         humidity: clamp(input.humidity, 0, 100),
         wind: Math.max(0, input.windSpeed),
       });
+      const diurnalBonus = diurnal(hourForDiurnal ?? 12);
 
       const breakdown: ScoreBreakdown = {
         temperature: tempRaw * config.weights.temperature,
@@ -219,10 +220,6 @@ export const buildSpeciesCalculator = (
         wind: windRaw * config.weights.wind,
         rain: rainRaw * config.weights.rain,
       };
-
-      const diurnalBonus = diurnal(hourForDiurnal ?? 12);
-
-      console.log({ hora: hourForDiurnal, bonus: diurnalBonus });
 
       const activePart = activeVars.reduce(
         (acc, key) => acc + breakdown[key],
@@ -273,6 +270,7 @@ export const buildSpeciesCalculator = (
         moonBonus,
         solunarBonus,
         moonPhaseBonus,
+        hourBonus: diurnalBonus,
       };
     },
   };

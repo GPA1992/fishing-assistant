@@ -1,6 +1,7 @@
 import { calculateScore } from "@env-data/scriptsV2";
 import { SpeciesId } from "@env-data/scriptsV2/schema/types";
 import { FastifyPluginAsync } from "fastify";
+import { DateTime } from "luxon";
 
 import { withErrorBoundary } from "../../../shared/libs/error-handler";
 import { AppResponse, HttpStatus } from "../../../shared/types";
@@ -32,12 +33,17 @@ export const postScoreTestRoute: FastifyPluginAsync = async (fastify) => {
       const result = await withErrorBoundary(async () => {
         const dto = request.body as ScoreTestBody;
         const speciesId: SpeciesId = (dto.speciesId ?? "traira") as SpeciesId;
-        const instant = new Date(dto.time);
-        const hasValidTime = !Number.isNaN(instant.getTime());
-        const localHour = hasValidTime ? instant.getUTCHours() : 12;
+        const instant = dto.time
+          ? DateTime.fromISO(dto.time, { setZone: true })
+          : null;
+        const hasValidTime = instant?.isValid ?? false;
+        const localHour = hasValidTime ? instant!.hour : 12;
         const localHourDec = hasValidTime
-          ? localHour + instant.getUTCMinutes() / 60
+          ? localHour + instant!.minute / 60
           : 12;
+        const normalizedTime = hasValidTime
+          ? instant!.toISO({ suppressMilliseconds: true })
+          : dto.time;
         const total = dto.total ?? dto.rain ?? 0;
         const showers = dto.showers ?? 0;
         const pressureTrend6h = Number.isFinite(dto.pressureTrend6h as number)
@@ -62,7 +68,7 @@ export const postScoreTestRoute: FastifyPluginAsync = async (fastify) => {
           message: "Score",
           code: HttpStatus.OK,
           data: {
-            time: dto.time,
+            time: normalizedTime,
             temperature: dto.temperature,
             humidity: dto.humidity,
             pressure: dto.pressure,

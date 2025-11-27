@@ -41,7 +41,9 @@ export function getScoreDayService(): GetScoreData {
       lon: Number(longitude),
       date: `${year}-${month}-${day}`,
     });
-    const timezone = tzLookup(Number(latitude), Number(longitude));
+    const timezone =
+      weatherDataResult.timezone ??
+      tzLookup(Number(latitude), Number(longitude));
 
     const diurnalWindows = buildSunWindows(sololunarData);
 
@@ -65,10 +67,12 @@ export function getScoreDayService(): GetScoreData {
     }, {} as Record<fishList, SpeciesCalculator>);
 
     const calc = weatherDataResult.hourly.map((w) => {
-      const dtUtc = DateTime.fromISO(w.time, { zone: "utc" });
-      const dtLocal = dtUtc.setZone(timezone);
+      const dtLocal = DateTime.fromISO(w.time, { setZone: true }).setZone(
+        timezone
+      );
       const localHour = dtLocal.hour;
       const localHourDec = localHour + dtLocal.minute / 60;
+      const timeLocalIso = dtLocal.toISO({ suppressMilliseconds: true });
 
       const scoreByFish = fishList.reduce((acc, specie) => {
         const calculator = calculators[specie];
@@ -91,6 +95,7 @@ export function getScoreDayService(): GetScoreData {
 
       return {
         ...w,
+        time: timeLocalIso ?? w.time,
         ...scoreByFish,
         moonPhase: sololunarData.moonPhase,
       };
@@ -130,7 +135,6 @@ export function getScoreDayService(): GetScoreData {
         });
       });
     });
-    console.log(JSON.stringify(resultByFish.traira));
 
     return resultByFish;
   };
